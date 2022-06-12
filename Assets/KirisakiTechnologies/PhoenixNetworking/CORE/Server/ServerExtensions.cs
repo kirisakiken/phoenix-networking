@@ -1,0 +1,53 @@
+using UnityEditor.Sprites;
+using UnityEngine;
+using UnityEngine.Android;
+
+namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
+{
+    public class ServerSend
+    {
+        private static void SendTcpData(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+            
+            if (!Server.Clients.ContainsKey(clientId))
+                Debug.LogError($"Unable to find client in collection Clients. Client Id: ${clientId}");
+
+            Server.Clients[clientId].Tcp.SendData(packet);
+        }
+
+        private static void SendTcpDataToAll(Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var serverClient in Server.Clients.Values)
+            {
+                serverClient.Tcp.SendData(packet);
+            }
+        }
+
+        private static void SendTcpDataToAllExceptOne(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var serverClient in Server.Clients.Values)
+            {
+                if (serverClient.Id == clientId)
+                    continue;
+
+                serverClient.Tcp.SendData(packet);
+            }
+        }
+        
+        public static void Welcome(int clientId, string message)
+        {
+            using (var packet = new Packet((int)ServerPackets.welcome))
+            {
+                packet.Write(message);
+                packet.Write(clientId);
+
+                SendTcpData(clientId, packet);
+            }
+        }
+    }
+}

@@ -12,13 +12,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
         public static Dictionary<int, ServerClient> Clients = new Dictionary<int, ServerClient>();
         public uint Port => _Port;
 
+        public delegate void PacketHandler(int clientId, Packet packet);
+        public static Dictionary<int, PacketHandler> _PacketHandlers;
+
         private void Start()
         {
-            // initialize clients collection
-            for (var i = 1; i <= _MaxClientCount; ++i)
-            {
-                Clients.Add(i, new ServerClient((uint) i));
-            }
+            InitializeServerData();
             
             // initialize tcp listener
             _TcpListener = new TcpListener(IPAddress.Any, (int) Port);
@@ -28,6 +27,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
             _TcpListener.BeginAcceptTcpClient(TcpConnectCallBack, null);
             
             Debug.Log($"Server started on port: ${Port}");
+        }
+
+        private void OnApplicationQuit()
+        {
+            _TcpListener.Stop();
         }
 
         private void TcpConnectCallBack(IAsyncResult result)
@@ -42,7 +46,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
             
             // for each client, add connected client to collection
             // and listen
-            for (var i = 1; i <= _MaxClientCount; ++i)
+            for (var i = 1; i <= MaxClientCount; ++i)
             {
                 // check if slot is empty
                 if (Clients[i].Tcp.Socket == null)
@@ -60,9 +64,27 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
         [SerializeField]
         private uint _Port = 26950;
 
-        [SerializeField]
-        private int _MaxClientCount = 20;
+        private const int MaxClientCount = 20;
 
         private TcpListener _TcpListener;
+
+        private static void InitializeServerData()
+        {
+            // initialize clients collection
+            for (var i = 1; i <= MaxClientCount; ++i)
+            {
+                Clients.Add(i, new ServerClient((uint) i));
+            }
+            
+            Debug.Log("Initialized clients collection");
+            
+            // initialize packet handlers
+            _PacketHandlers = new Dictionary<int, PacketHandler>()
+            {
+                {(int)ClientPackets.welcomeReceived, ServerHandler.WelcomeReceived}
+            };
+            
+            Debug.Log("Initialized server packet handlers");
+        }
     }
 }

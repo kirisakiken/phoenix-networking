@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using KirisakiTechnologies.PhoenixNetworking.CORE.Server;
+using UnityEditor.Sprites;
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
@@ -31,6 +33,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
             private NetworkStream _Stream;
             private byte[] _ReceiveBuffer;
 
+            private Packet _ReceivedData;
+
+            private string OnConnectMessage => $"Welcome to the server. Client: Guest[{Id}]";
+
             public ServerTcp(uint id)
             {
                 Id = id;
@@ -44,12 +50,30 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
 
                 _Stream = Socket.GetStream();
 
+                _ReceivedData = new Packet();
                 _ReceiveBuffer = new byte[DataBufferSize];
 
                 // start reading data
                 _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
                 
-                // TODO: send welcome packet
+                // send on connected message to connected client
+                ServerSend.Welcome((int) Id, OnConnectMessage);
+            }
+            
+            public void SendData(Packet packet)
+            {
+                try
+                {
+                    if (Socket != null)
+                    {
+                        _Stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }
 
             private void ReceiveCallback(IAsyncResult result)
@@ -65,7 +89,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                     var data = new byte[byteLength];
                     Array.Copy(_ReceiveBuffer, data, byteLength);
                     
-                    // TODO: handle data
+                    // handle data
+                    _ReceivedData.Reset(HandleData(data));
                     
                     // Continue reading
                     _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
@@ -76,6 +101,46 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                     // TODO: disconnect
                     throw;
                 }
+            }
+            
+            private bool HandleData(byte[] data)
+            {
+                var packetLength = 0;
+                
+                _ReceivedData.SetBytes(data);
+
+                if (_ReceivedData.UnreadLength() >= 4)
+                {
+                    packetLength = _ReceivedData.ReadInt();
+                    if (packetLength <= 0)
+                        return true;
+                }
+
+                while (packetLength > 0 && packetLength <= _ReceivedData.UnreadLength())
+                {
+                    var packetBytes = _ReceivedData.ReadBytes(packetLength);
+                    ThreadManager.ExecuteOnMainThread(() =>
+                    {
+                        using (var packet = new Packet(packetBytes))
+                        {
+                            var packetId = packet.ReadInt();
+                            Server.Server._PacketHandlers[packetId]((int) Id, packet);
+                        }
+                    });
+
+                    packetLength = 0;
+                    if (_ReceivedData.UnreadLength() >= 4)
+                    {
+                        packetLength = _ReceivedData.ReadInt();
+                        if (packetLength <= 0)
+                            return true;
+                    }
+                }
+
+                if (packetLength <= 1)
+                    return true;
+
+                return false;
             }
         }
     }

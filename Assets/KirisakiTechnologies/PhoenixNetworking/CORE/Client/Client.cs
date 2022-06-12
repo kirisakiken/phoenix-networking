@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using KirisakiTechnologies.PhoenixNetworking.CORE.Server;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,26 +14,39 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
         public static string Ip = "127.0.0.1";
         public static uint Port = 26950;
 
-        public uint Id = 1;
+        public static int Id = 1;
+        public static string Name = "Johnny";
 
-        public ClientTcp Tcp;
+        public static ClientTcp Tcp;
+
+        private delegate void PacketHandler(Packet packet);
+        private static Dictionary<int, PacketHandler> _PacketHandlers;
 
         private void Start()
         {
             Tcp = new ClientTcp();
-            ConnectToServer();
+            // ConnectToServer();
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.K))
+                ConnectToServer();
         }
 
         public void ConnectToServer()
         {
+            InitializeClientData();
             Tcp.Connect();
         }
-        
+
         public class ClientTcp
         {
             public TcpClient Socket { get; private set; }
             private NetworkStream _Stream;
             private byte[] _ReceiveBuffer;
+
+            private Packet _ReceivedData;
 
             public void Connect()
             {
@@ -46,6 +61,22 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                 
                 Debug.Log($"Client: connected to server. . .");
             }
+            
+            public void SendData(Packet packet)
+            {
+                try
+                {
+                    if (Socket != null)
+                    {
+                        _Stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error sending data to server via Tcp: ${e.Message}");
+                    throw;
+                }
+            }
 
             private void ClientConnectCallback(IAsyncResult result)
             {
@@ -55,6 +86,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                     return;
 
                 _Stream = Socket.GetStream();
+
+                _ReceivedData = new Packet();
 
                 _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
             }
@@ -73,6 +106,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                     Array.Copy(_ReceiveBuffer, data, byteLength);
                     
                     // TODO: handle data
+                    _ReceivedData.Reset(HandleData(data));
                     
                     // Continue reading
                     _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
@@ -82,6 +116,56 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                     // TODO: disconnect
                 }
             }
+
+            private bool HandleData(byte[] data)
+            {
+                var packetLength = 0;
+                
+                _ReceivedData.SetBytes(data);
+
+                if (_ReceivedData.UnreadLength() >= 4)
+                {
+                    packetLength = _ReceivedData.ReadInt();
+                    if (packetLength <= 0)
+                        return true;
+                }
+
+                while (packetLength > 0 && packetLength <= _ReceivedData.UnreadLength())
+                {
+                    var packetBytes = _ReceivedData.ReadBytes(packetLength);
+                    ThreadManager.ExecuteOnMainThread(() =>
+                    {
+                        using (var packet = new Packet(packetBytes))
+                        {
+                            var packetId = packet.ReadInt();
+                            _PacketHandlers[packetId](packet);
+                        }
+                    });
+
+                    packetLength = 0;
+                    if (_ReceivedData.UnreadLength() >= 4)
+                    {
+                        packetLength = _ReceivedData.ReadInt();
+                        if (packetLength <= 0)
+                            return true;
+                    }
+                }
+
+                if (packetLength <= 1)
+                    return true;
+
+                return false;
+            }
+        }
+        
+        private void InitializeClientData()
+        {
+            _PacketHandlers = new Dictionary<int, PacketHandler>()
+            {
+                {(int)ServerPackets.welcome, ClientHandle.Welcome},
+            };
+            
+            Debug.Log("Initialized client packet handlers");
         }
     }
 
