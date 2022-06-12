@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using KirisakiTechnologies.GameSystem.Modules;
+using KirisakiTechnologies.GameSystem.Scripts.Modules;
 
-namespace KirisakiTechnologies.GameSystem.Containers
+namespace KirisakiTechnologies.GameSystem.Scripts.Containers
 {
     /// <summary>
     ///     Represents a container that holds ownership of modules

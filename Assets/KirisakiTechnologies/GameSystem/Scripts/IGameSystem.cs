@@ -2,10 +2,9 @@ using System;
 using System.Threading.Tasks;
 
 using JetBrains.Annotations;
+using KirisakiTechnologies.GameSystem.Scripts.Modules;
 
-using KirisakiTechnologies.GameSystem.Modules;
-
-namespace KirisakiTechnologies.GameSystem
+namespace KirisakiTechnologies.GameSystem.Scripts
 {
     /// <summary>
     /// 

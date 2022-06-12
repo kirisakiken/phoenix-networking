@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-using KirisakiTechnologies.GameSystem.Modules;
+using KirisakiTechnologies.GameSystem.Scripts.Modules;
 
 using UnityEngine;
 
-namespace KirisakiTechnologies.GameSystem.Containers
+namespace KirisakiTechnologies.GameSystem.Scripts.Containers
 {
     public class ModulesContainerCollection : MonoBehaviour, IModulesContainerCollection
     {

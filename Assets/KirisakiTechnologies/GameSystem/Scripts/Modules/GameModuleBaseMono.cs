@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-namespace KirisakiTechnologies.GameSystem.Modules
+namespace KirisakiTechnologies.GameSystem.Scripts.Modules
 {
     public abstract class GameModuleBaseMono : MonoBehaviour, IGameModule
     {

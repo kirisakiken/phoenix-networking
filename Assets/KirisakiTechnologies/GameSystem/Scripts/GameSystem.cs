@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using KirisakiTechnologies.GameSystem.Containers;
-using KirisakiTechnologies.GameSystem.Modules;
-
+using KirisakiTechnologies.GameSystem.Scripts.Containers;
+using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using UnityEngine;
 
-namespace KirisakiTechnologies.GameSystem
+namespace KirisakiTechnologies.GameSystem.Scripts
 {
     public enum InitializationMethod
     {

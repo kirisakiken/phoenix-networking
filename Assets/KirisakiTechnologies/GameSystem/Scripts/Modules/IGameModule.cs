@@ -2,7 +2,7 @@
 
 using JetBrains.Annotations;
 
-namespace KirisakiTechnologies.GameSystem.Modules
+namespace KirisakiTechnologies.GameSystem.Scripts.Modules
 {
     /// <summary>
     ///     Represents a generic game module

@@ -1,8 +1,8 @@
 ﻿using System;
 
-using KirisakiTechnologies.GameSystem.Modules;
+using KirisakiTechnologies.GameSystem.Scripts.Modules;
 
-namespace KirisakiTechnologies.GameSystem.Extensions
+namespace KirisakiTechnologies.GameSystem.Scripts.Extensions
 {
     /// <summary>
     ///     Game System Extensions
