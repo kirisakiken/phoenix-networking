@@ -1,6 +1,7 @@
+using KirisakiTechnologies.PhoenixNetworking.CORE;
 using UnityEngine;
 
-namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server
 {
     public class ServerHandler : MonoBehaviour
     {

@@ -1,8 +1,7 @@
-using System;
-using KirisakiTechnologies.PhoenixNetworking.CORE.Server;
+using KirisakiTechnologies.PhoenixNetworking.CORE;
 using UnityEngine;
 
-namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
 {
     public class ClientHandle : MonoBehaviour
     {
@@ -11,7 +10,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
             var message = packet.ReadString();
             var id = packet.ReadInt();
 
-            Client.Id = id;
+            Scripts.Client.Client.Id = id;
             
             // send welcome received packet
             ClientSend.WelcomeReceived();

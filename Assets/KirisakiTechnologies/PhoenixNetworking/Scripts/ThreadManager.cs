@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KirisakiTechnologies.PhoenixNetworking.CORE
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts
 {
     public class ThreadManager : MonoBehaviour
     {

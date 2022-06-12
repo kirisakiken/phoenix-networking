@@ -1,63 +1,63 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Sockets;
-using KirisakiTechnologies.PhoenixNetworking.CORE.Server;
-using UnityEditor.Sprites;
+using KirisakiTechnologies.PhoenixNetworking.CORE;
 using UnityEngine;
 
-namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
 {
-    /// <summary>
-    ///     Represents a client instance that being stored in Server
-    /// </summary>
-    /// TODO: convert to interface
-    /// TODO: rename to ClientModule maybe?
-    public class ServerClient
+    public class Client : MonoBehaviour
     {
         public static int DataBufferSize = 4096;
-        public uint Id { get; }
-        public ServerTcp Tcp { get; }
+        public static string Ip = "127.0.0.1";
+        public static uint Port = 26950;
 
-        public ServerClient(uint id)
+        public static int Id = 1;
+        public static string Name = "Johnny";
+
+        public static ClientTcp Tcp;
+
+        private delegate void PacketHandler(Packet packet);
+        private static Dictionary<int, PacketHandler> _PacketHandlers;
+
+        private void Start()
         {
-            Id = id;
-            Tcp = new ServerTcp(id);
+            Tcp = new ClientTcp();
+            // ConnectToServer();
         }
 
-        public class ServerTcp
+        private void Update()
         {
-            public TcpClient Socket;
-            private uint Id;
+            if (Input.GetKeyDown(KeyCode.K))
+                ConnectToServer();
+        }
 
+        public void ConnectToServer()
+        {
+            InitializeClientData();
+            Tcp.Connect();
+        }
+
+        public class ClientTcp
+        {
+            public TcpClient Socket { get; private set; }
             private NetworkStream _Stream;
             private byte[] _ReceiveBuffer;
 
             private Packet _ReceivedData;
 
-            private string OnConnectMessage => $"Welcome to the server. Client: Guest[{Id}]";
-
-            public ServerTcp(uint id)
+            public void Connect()
             {
-                Id = id;
-            }
+                Socket = new TcpClient
+                {
+                    ReceiveBufferSize = DataBufferSize,
+                    SendBufferSize = DataBufferSize,
+                };
 
-            public void Connect(TcpClient socket)
-            {
-                Socket = socket;
-                Socket.ReceiveBufferSize = DataBufferSize;
-                Socket.SendBufferSize = DataBufferSize;
-
-                _Stream = Socket.GetStream();
-
-                _ReceivedData = new Packet();
                 _ReceiveBuffer = new byte[DataBufferSize];
-
-                // start reading data
-                _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
+                Socket.BeginConnect(Ip, (int) Port, ClientConnectCallback, Socket);
                 
-                // send on connected message to connected client
-                ServerSend.Welcome((int) Id, OnConnectMessage);
+                Debug.Log($"Client: connected to server. . .");
             }
             
             public void SendData(Packet packet)
@@ -71,9 +71,23 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Debug.LogError($"Error sending data to server via Tcp: ${e.Message}");
                     throw;
                 }
+            }
+
+            private void ClientConnectCallback(IAsyncResult result)
+            {
+                Socket.EndConnect(result);
+
+                if (!Socket.Connected)
+                    return;
+
+                _Stream = Socket.GetStream();
+
+                _ReceivedData = new Packet();
+
+                _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
             }
 
             private void ReceiveCallback(IAsyncResult result)
@@ -89,7 +103,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                     var data = new byte[byteLength];
                     Array.Copy(_ReceiveBuffer, data, byteLength);
                     
-                    // handle data
+                    // TODO: handle data
                     _ReceivedData.Reset(HandleData(data));
                     
                     // Continue reading
@@ -97,12 +111,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Error receiving ServerTcp data: ${e.Message}");
                     // TODO: disconnect
-                    throw;
                 }
             }
-            
+
             private bool HandleData(byte[] data)
             {
                 var packetLength = 0;
@@ -124,7 +136,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                         using (var packet = new Packet(packetBytes))
                         {
                             var packetId = packet.ReadInt();
-                            Server.Server._PacketHandlers[packetId]((int) Id, packet);
+                            _PacketHandlers[packetId](packet);
                         }
                     });
 
@@ -143,5 +155,17 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Client
                 return false;
             }
         }
+        
+        private void InitializeClientData()
+        {
+            _PacketHandlers = new Dictionary<int, PacketHandler>()
+            {
+                {(int)ServerPackets.welcome, ClientHandle.Welcome},
+            };
+            
+            Debug.Log("Initialized client packet handlers");
+        }
     }
+
+    
 }

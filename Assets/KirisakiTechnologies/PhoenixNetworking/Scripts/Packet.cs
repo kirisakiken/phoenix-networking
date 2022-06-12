@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts
 {
     /// <summary>Sent from server to client.</summary>
     public enum ServerPackets

@@ -1,8 +1,7 @@
-using UnityEditor.Sprites;
+using KirisakiTechnologies.PhoenixNetworking.CORE;
 using UnityEngine;
-using UnityEngine.Android;
 
-namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server
 {
     public class ServerSend
     {
@@ -10,17 +9,17 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
         {
             packet.WriteLength();
             
-            if (!Server.Clients.ContainsKey(clientId))
+            if (!Scripts.Server.Server.Clients.ContainsKey(clientId))
                 Debug.LogError($"Unable to find client in collection Clients. Client Id: ${clientId}");
 
-            Server.Clients[clientId].Tcp.SendData(packet);
+            Scripts.Server.Server.Clients[clientId].Tcp.SendData(packet);
         }
 
         private static void SendTcpDataToAll(Packet packet)
         {
             packet.WriteLength();
 
-            foreach (var serverClient in Server.Clients.Values)
+            foreach (var serverClient in Scripts.Server.Server.Clients.Values)
             {
                 serverClient.Tcp.SendData(packet);
             }
@@ -30,7 +29,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.CORE.Server
         {
             packet.WriteLength();
 
-            foreach (var serverClient in Server.Clients.Values)
+            foreach (var serverClient in Scripts.Server.Server.Clients.Values)
             {
                 if (serverClient.Id == clientId)
                     continue;
