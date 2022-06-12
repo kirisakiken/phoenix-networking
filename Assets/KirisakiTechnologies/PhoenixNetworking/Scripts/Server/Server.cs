@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using KirisakiTechnologies.PhoenixNetworking.CORE;
-using KirisakiTechnologies.PhoenixNetworking.CORE.Server;
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server

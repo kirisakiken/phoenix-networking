@@ -24,6 +24,6 @@ namespace KirisakiTechnologies.GameSystem.Scripts
         /// <summary>
         ///     Initializes and begins the Game System
         /// </summary>
-        public Task InitializeAndBegin();
+        Task InitializeAndBegin();
     }
 }
