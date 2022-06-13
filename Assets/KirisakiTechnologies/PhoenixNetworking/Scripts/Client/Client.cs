@@ -23,17 +23,19 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
         private void Start()
         {
             Tcp = new ClientTcp();
-            // ConnectToServer();
+            ConnectToServer();
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.K))
-                ConnectToServer();
-        }
+        // private void Update()
+        // {
+        //     if (Input.GetKeyDown(KeyCode.K))
+        //         ConnectToServer();
+        // }
 
         public void ConnectToServer()
         {
+            // TODO: return if already connected
+            
             InitializeClientData();
             Tcp.Connect();
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 {
@@ -7,10 +8,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
     {
         #region Constructors
 
-        public ServerClient(int id)
+        public ServerClient(int id, IServerModule serverModule) // TODO: remove module from constructor when dependencies are refactored
         {
             Id = id;
-            ServerTcp = new ServerTcp(id, DataBufferSize);
+            ServerTcp = new ServerTcp(id, DataBufferSize, serverModule);
         }
 
         #endregion
@@ -39,10 +40,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
     {
         #region Constructors
 
-        public ServerTcp(int id, int dataBufferSize)
+        public ServerTcp(int id, int dataBufferSize, IServerModule serverModule) // TODO: remove module from constructor when dependencies are refactored
         {
             Id = id;
             DataBufferSize = dataBufferSize;
+            _ServerModule = serverModule;
         }
 
         #endregion
@@ -68,6 +70,22 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
         }
 
+        // TODO: rename to e.g. WriteStreamData/WriteData/WritePacket
+        public void SendData(Packet packet)
+        {
+            try
+            {
+                if (Socket == null)
+                    return;
+
+                _Stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null); // TODO: refactor packet file
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"Unable to send data: {e.Message}");
+            }
+        }
+
         #endregion
 
         #region Public
@@ -82,6 +100,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
         private byte[] _ReceiveBuffer;
         private Packet _ReceivedData; // TODO: refactor packet file
+
+        private IServerModule _ServerModule; // TODO: remove module from constructor when dependencies are refactored
 
         private void ReceiveCallback(IAsyncResult result)
         {
@@ -105,7 +125,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             }
         }
 
-        private bool HandleData(byte[] data)
+        private bool HandleData(byte[] data) // TODO: this method does not belong into lower data class like this
         {
             var packetLength = 0;
 
@@ -128,7 +148,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
                     using (var packet = new Packet(packetBytes))
                     {
                         var packetId = packet.ReadInt();
-                        Server._PacketHandlers[packetId](Id, packet);
+                        // TODO: refactor below
+                        _ServerModule.PacketHandlers[packetId](Id, packet);
                     }
                 });
 

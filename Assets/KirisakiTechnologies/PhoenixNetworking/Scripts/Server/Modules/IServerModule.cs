@@ -12,5 +12,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         IReadOnlyDictionary<int, IServerClient> Clients { get; }
 
         IReadOnlyDictionary<int, PacketHandler> PacketHandlers { get; }
+
+        void SendTcpData(int clientId, Packet packet);
+
+        void SendTcpDataToAll(Packet packet);
+
+        void SendTcpDataToAllExceptOne(int clientId, Packet packet);
     }
 }

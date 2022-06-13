@@ -17,6 +17,37 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         public IReadOnlyDictionary<int, IServerClient> Clients => _Clients;
         public IReadOnlyDictionary<int, PacketHandler> PacketHandlers => _PacketHandlers;
 
+        public void SendTcpData(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+
+            if (!Clients.ContainsKey(clientId))
+                throw new InvalidOperationException($"Unable to find client with id: {clientId} in collection {nameof(Clients)}");
+
+            Clients[clientId].ServerTcp.SendData(packet);
+        }
+
+        public void SendTcpDataToAll(Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var client in Clients.Values)
+                client.ServerTcp.SendData(packet);
+        }
+
+        public void SendTcpDataToAllExceptOne(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var client in Clients.Values)
+            {
+                if (client.Id == clientId)
+                    continue;
+
+                client.ServerTcp.SendData(packet);
+            }
+        }
+
         #endregion
 
         #region Overrides
@@ -55,7 +86,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         private void InitializeServerData()
         {
             for (var i = 1; i <= _MaxClientCount; ++i)
-                _Clients.Add(i, new DataTypes.ServerClient(i));
+                _Clients.Add(i, new DataTypes.ServerClient(i, this));
 
             // TODO: refactor below
             _PacketHandlers.Add((int) ClientPackets.welcomeReceived, ServerHandler.WelcomeReceived); // TODO: refactor packet files
@@ -92,11 +123,25 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                 if (Clients[i].ServerTcp.Socket == null)
                 {
                     Clients[i].ServerTcp.Connect(client);
+                    using (var packet = OnConnectedPacket(Clients[i].Id, "Mock | from server to client -> on connected payload"))
+                        SendTcpData(Clients[i].Id, packet);
+
                     return;
                 }
             }
-            
+
             Debug.LogError($"{client.Client.RemoteEndPoint} failed to connect. Server is full!");
+        }
+
+        // TODO: Refactor the entire method. Move it to data a provider/builder or something.
+        private static Packet OnConnectedPacket(int clientId, string message)
+        {
+            // important: make sure to dispose this where you call
+            var packet = new Packet((int) ServerPackets.welcome);
+            packet.Write(message);
+            packet.Write(clientId);
+
+            return packet;
         }
 
         #endregion
