@@ -11,7 +11,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
 
             Scripts.Client.Client.Id = id;
             
-            // send welcome received packet
+            // send ClientConnected received packet
             ClientSend.WelcomeReceived();
             
             Debug.Log($"Message from server: {message} | {id}");

@@ -39,7 +39,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server
         
         public static void Welcome(int clientId, string message)
         {
-            using (var packet = new Packet((int)ServerPackets.welcome))
+            using (var packet = new Packet((int)ServerPackets.ClientConnected))
             {
                 packet.Write(message);
                 packet.Write(clientId);

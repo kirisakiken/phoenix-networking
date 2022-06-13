@@ -12,7 +12,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
 
         public static void WelcomeReceived()
         {
-            using (var packet = new Packet((int)ClientPackets.welcomeReceived))
+            using (var packet = new Packet((int)ClientPackets.ConnectReceived))
             {
                 packet.Write(Scripts.Client.Client.Id);
                 packet.Write(Scripts.Client.Client.Name);

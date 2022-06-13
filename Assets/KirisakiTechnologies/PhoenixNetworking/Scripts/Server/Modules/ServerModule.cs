@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using KirisakiTechnologies.GameSystem.Scripts;
+using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes;
 using UnityEngine;
@@ -54,6 +55,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         public override Task Initialize(IGameSystem gameSystem)
         {
+            _NetworkEventHandlerModule = gameSystem.GetModule<INetworkEventHandlerModule>();
+
             InitializeServerData();
             InitializeTcp();
 
@@ -79,6 +82,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         private int _Port = 26950;
 
         private TcpListener _TcpListener;
+        private INetworkEventHandlerModule _NetworkEventHandlerModule;
 
         private readonly Dictionary<int, IServerClient> _Clients = new Dictionary<int, IServerClient>();
         private readonly Dictionary<int, PacketHandler> _PacketHandlers = new Dictionary<int, PacketHandler>();
@@ -89,8 +93,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                 _Clients.Add(i, new DataTypes.ServerClient(i, this));
 
             // TODO: refactor below
-            _PacketHandlers.Add((int) ClientPackets.welcomeReceived, ServerHandler.WelcomeReceived); // TODO: refactor packet files
-            
+            // _PacketHandlers.Add((int) ClientPackets.ConnectReceived, ServerHandler.WelcomeReceived); // TODO: refactor packet files
+            _PacketHandlers.Add((int) ClientPackets.ConnectReceived, _NetworkEventHandlerModule.ClientConnected); // TODO: refactor packet files
+
             Debug.Log("Initialized Clients Collection");
             Debug.Log("Initialized Server Packet Handlers");
         }
@@ -137,7 +142,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         private static Packet OnConnectedPacket(int clientId, string message)
         {
             // important: make sure to dispose this where you call
-            var packet = new Packet((int) ServerPackets.welcome);
+            var packet = new Packet((int) ServerPackets.ClientConnected);
             packet.Write(message);
             packet.Write(clientId);
 

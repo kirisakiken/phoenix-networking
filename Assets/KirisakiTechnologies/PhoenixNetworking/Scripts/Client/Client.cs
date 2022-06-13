@@ -162,7 +162,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
         {
             _PacketHandlers = new Dictionary<int, PacketHandler>()
             {
-                {(int)ServerPackets.welcome, ClientHandle.Welcome},
+                { (int) ServerPackets.ClientConnected, ClientHandle.Welcome },
+                // { (int) ServerPackets.ClientTick, ClientHandle.ClientTick }
             };
             
             Debug.Log("Initialized client packet handlers");

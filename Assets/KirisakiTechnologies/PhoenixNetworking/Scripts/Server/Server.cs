@@ -80,7 +80,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server
             // initialize packet handlers
             _PacketHandlers = new Dictionary<int, PacketHandler>()
             {
-                {(int)ClientPackets.welcomeReceived, ServerHandler.WelcomeReceived}
+                {(int)ClientPackets.ConnectReceived, ServerHandler.WelcomeReceived}
             };
             
             Debug.Log("Initialized server packet handlers");
