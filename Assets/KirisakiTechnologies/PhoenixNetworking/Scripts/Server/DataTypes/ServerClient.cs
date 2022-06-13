@@ -143,7 +143,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             {
                 var packetBytes = _ReceivedData.ReadBytes(packetLength);
                 
-                ThreadManager.ExecuteOnMainThread(() =>
+                StaticThreadModule.ExecuteOnMainThread(() =>
                 {
                     using (var packet = new Packet(packetBytes))
                     {

@@ -23,14 +23,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
         private void Start()
         {
             Tcp = new ClientTcp();
-            ConnectToServer();
+            // ConnectToServer();
         }
 
-        // private void Update()
-        // {
-        //     if (Input.GetKeyDown(KeyCode.K))
-        //         ConnectToServer();
-        // }
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.K))
+                ConnectToServer();
+        }
 
         public void ConnectToServer()
         {
@@ -133,7 +133,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
                 while (packetLength > 0 && packetLength <= _ReceivedData.UnreadLength())
                 {
                     var packetBytes = _ReceivedData.ReadBytes(packetLength);
-                    ThreadManager.ExecuteOnMainThread(() =>
+                    ThreadManager.ExecuteOnMainThread(() => // TODO: ThreadManager to StaticThreadModule refactor on Client repo
                     {
                         using (var packet = new Packet(packetBytes))
                         {
