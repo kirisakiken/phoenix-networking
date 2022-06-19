@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-
 using UnityEngine;
 
-namespace KirisakiTechnologies.GameSystem.Scripts.Modules
+namespace KirisakiTechnologies.GameSystem.Scripts.Providers
 {
-    public abstract class GameModuleBaseMono : MonoBehaviour, IGameModule
+    public abstract class GameProviderBaseMono : MonoBehaviour, IGameProvider
     {
-        #region IGameModule Implementation
+        #region IGameProvider Implementation
 
         public virtual Task Initialize(IGameSystem gameSystem)
         {
