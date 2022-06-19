@@ -9,12 +9,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
             var message = packet.ReadString();
             var id = packet.ReadInt();
 
-            Scripts.Client.Client.Id = id;
-            
+            Debug.Log($"{Client.Id} | {id}");
+            Client.Id = id;
             // send ClientConnected received packet
             ClientSend.WelcomeReceived();
             
-            Debug.Log($"Message from server: {message} | {id}");
+            Debug.Log($"Client: Message received from server: ( {message} | {id} )");
         }
     }
 }

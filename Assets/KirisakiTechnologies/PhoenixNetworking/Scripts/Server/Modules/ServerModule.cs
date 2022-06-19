@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using KirisakiTechnologies.GameSystem.Scripts;
-using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes;
 using UnityEngine;
@@ -15,39 +14,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
     {
         #region IServerModule Implementation
 
+        public event NetworkEvent ClientConnectedHandler;
+        public event PacketEvent OnClientConnectionHandshakeCompleted;
+
         public IReadOnlyDictionary<int, IServerClient> Clients => _Clients;
         public IReadOnlyDictionary<int, PacketHandler> PacketHandlers => _PacketHandlers;
-
-        public void SendTcpData(int clientId, Packet packet)
-        {
-            packet.WriteLength();
-
-            if (!Clients.ContainsKey(clientId))
-                throw new InvalidOperationException($"Unable to find client with id: {clientId} in collection {nameof(Clients)}");
-
-            Clients[clientId].ServerTcp.SendData(packet);
-        }
-
-        public void SendTcpDataToAll(Packet packet)
-        {
-            packet.WriteLength();
-
-            foreach (var client in Clients.Values)
-                client.ServerTcp.SendData(packet);
-        }
-
-        public void SendTcpDataToAllExceptOne(int clientId, Packet packet)
-        {
-            packet.WriteLength();
-
-            foreach (var client in Clients.Values)
-            {
-                if (client.Id == clientId)
-                    continue;
-
-                client.ServerTcp.SendData(packet);
-            }
-        }
 
         #endregion
 
@@ -55,8 +26,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         public override Task Initialize(IGameSystem gameSystem)
         {
-            _NetworkEventHandlerModule = gameSystem.GetModule<INetworkEventHandlerModule>();
-
             InitializeServerData();
             InitializeTcp();
 
@@ -82,7 +51,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         private int _Port = 26950;
 
         private TcpListener _TcpListener;
-        private INetworkEventHandlerModule _NetworkEventHandlerModule;
 
         private readonly Dictionary<int, IServerClient> _Clients = new Dictionary<int, IServerClient>();
         private readonly Dictionary<int, PacketHandler> _PacketHandlers = new Dictionary<int, PacketHandler>();
@@ -92,13 +60,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             for (var i = 1; i <= _MaxClientCount; ++i)
                 _Clients.Add(i, new DataTypes.ServerClient(i, this));
 
-            // TODO: refactor below
-            // _PacketHandlers.Add((int) ClientPackets.ConnectReceived, ServerHandler.WelcomeReceived); // TODO: refactor packet files
-            _PacketHandlers.Add((int) ClientPackets.ConnectReceived, _NetworkEventHandlerModule.ClientConnected); // TODO: refactor packet files
+            _PacketHandlers.Add((int) ClientPackets.ConnectReceived, ClientConnected);
 
-            Debug.Log("Initialized Clients Collection");
-            Debug.Log("Initialized Server Packet Handlers");
+            Debug.Log("ServerModule: Initialized Clients Collection");
+            Debug.Log("ServerModule: Initialized Server Packet Handlers");
         }
+
+        private void ClientConnected(int clientId, Packet packet) => OnClientConnectionHandshakeCompleted?.Invoke(clientId, packet);
 
         private void InitializeTcp()
         {
@@ -120,33 +88,22 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         {
             var client = _TcpListener.EndAcceptTcpClient(result);
             _TcpListener.BeginAcceptTcpClient(TcpClientConnectCallback, null);
-            
+
             Debug.Log($"Incoming connection from: {client.Client.RemoteEndPoint}");
 
+            // adds connected client to Clients collection (refactorable)
             for (var i = 1; i <= _MaxClientCount; ++i)
             {
-                if (Clients[i].ServerTcp.Socket == null)
-                {
-                    Clients[i].ServerTcp.Connect(client);
-                    using (var packet = OnConnectedPacket(Clients[i].Id, "Mock | from server to client -> on connected payload"))
-                        SendTcpData(Clients[i].Id, packet);
+                if (Clients[i].ServerTcp.Socket != null)
+                    continue;
 
-                    return;
-                }
+                Clients[i].ServerTcp.Connect(client);
+                ClientConnectedHandler?.Invoke(Clients[i].Id);
+
+                return;
             }
 
             Debug.LogError($"{client.Client.RemoteEndPoint} failed to connect. Server is full!");
-        }
-
-        // TODO: Refactor the entire method. Move it to data a provider/builder or something.
-        private static Packet OnConnectedPacket(int clientId, string message)
-        {
-            // important: make sure to dispose this where you call
-            var packet = new Packet((int) ServerPackets.ClientConnected);
-            packet.Write(message);
-            packet.Write(clientId);
-
-            return packet;
         }
 
         #endregion

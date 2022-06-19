@@ -12,10 +12,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
         public static string Ip = "127.0.0.1";
         public static uint Port = 26950;
 
-        public static int Id = 1;
+        public static int Id = 1; // this should be overriden by server when we connected
         public static string Name = "Johnny";
 
         public static ClientTcp Tcp;
+
+        public bool IsConnected => Tcp?.Socket?.Connected ?? false;
 
         private delegate void PacketHandler(Packet packet);
         private static Dictionary<int, PacketHandler> _PacketHandlers;

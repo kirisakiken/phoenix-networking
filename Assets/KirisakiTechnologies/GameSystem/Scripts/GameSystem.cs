@@ -58,11 +58,10 @@ namespace KirisakiTechnologies.GameSystem.Scripts
         private async Task Initialize(IGameSystem system)
         {
             PopulateGameModules();
+            PopulateGameProviders();
 
             foreach (var module in _GameModules)
                 await module.Initialize(system);
-
-            PopulateGameProviders();
 
             foreach (var provider in _GameProviders)
                 await provider.Initialize(system);

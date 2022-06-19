@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes;
@@ -6,17 +7,33 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 {
     public delegate void PacketHandler(int clientId, Packet packet); // TODO: refactor packet file
 
-    // TODO: add description
+    public delegate void NetworkEvent(int clientId);
+    public delegate void PacketEvent(int clientId, Packet packet);
+
+    /// <summary>
+    ///     Represents Main TCP/UDP ServerModule
+    /// </summary>
     public interface IServerModule : IGameModule
     {
+        /// <summary>
+        ///     Invoked on incoming connection clientId is assigned by server
+        /// </summary>
+        event NetworkEvent ClientConnectedHandler;
+
+        /// <summary>
+        ///     Invoked on response from client on incoming connection (handshake)
+        /// </summary>
+        event PacketEvent OnClientConnectionHandshakeCompleted;
+
+        /// <summary>
+        ///     Represents Clients Id/ServerClient Collection
+        /// </summary>
         IReadOnlyDictionary<int, IServerClient> Clients { get; }
 
+        /// <summary>
+        ///     Represents PacketHandler Collection
+        ///     TODO: refactor key type (int to enum)
+        /// </summary>
         IReadOnlyDictionary<int, PacketHandler> PacketHandlers { get; }
-
-        void SendTcpData(int clientId, Packet packet);
-
-        void SendTcpDataToAll(Packet packet);
-
-        void SendTcpDataToAllExceptOne(int clientId, Packet packet);
     }
 }

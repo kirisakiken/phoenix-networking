@@ -7,13 +7,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
     /// <summary>Sent from server to client.</summary>
     public enum ServerPackets
     {
-        ClientConnected = 1
+        ClientConnected = 1, // Initial Connection
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
-        ConnectReceived = 1
+        ConnectReceived = 1, // Handshake
     }
 
     public class Packet : IDisposable
