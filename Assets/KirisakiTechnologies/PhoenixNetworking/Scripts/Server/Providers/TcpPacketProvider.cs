@@ -10,7 +10,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 
         public Packet ClientConnectedPacket(int clientId, string message) => BuildServerPacket(ServerPackets.ClientConnected, clientId, message);
 
-        public Packet ClientConnectReceivedPacket(int clientId, string message) => BuildServerPacket(ServerPackets.ClientConnected, clientId, message);
+        public Packet ClientConnectReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
 
         public Packet ClientConnectReceivedBroadcastPacket(int clientId, string message)
         {
@@ -37,7 +37,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 
         private Packet BuildClientPacket(ClientPackets packetId, int clientId, string message)
         {
-            throw new NotImplementedException();
+            var packet = new Packet((int) packetId);
+            packet.Write(message);
+            packet.Write(clientId);
+
+            return packet;
         }
 
         #endregion
