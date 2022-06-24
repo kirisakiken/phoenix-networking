@@ -14,7 +14,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
     {
         #region IServerModule Implementation
 
-        public event NetworkEvent ClientConnectedHandler;
+        public event NetworkEvent OnClientConnected;
         public event PacketEvent OnClientConnectionHandshakeCompleted;
 
         public IReadOnlyDictionary<int, IServerClient> Clients => _Clients;
@@ -98,7 +98,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                     continue;
 
                 Clients[i].ServerTcp.Connect(client);
-                ClientConnectedHandler?.Invoke(Clients[i].Id);
+                OnClientConnected?.Invoke(Clients[i].Id);
 
                 return;
             }

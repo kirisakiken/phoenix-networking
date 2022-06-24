@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes;
@@ -18,7 +17,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         /// <summary>
         ///     Invoked on incoming connection clientId is assigned by server
         /// </summary>
-        event NetworkEvent ClientConnectedHandler;
+        event NetworkEvent OnClientConnected;
 
         /// <summary>
         ///     Invoked on response from client on incoming connection (handshake)

@@ -38,7 +38,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         #endregion
     }
 
-    public class ServerTcp : IServerTcp
+    public class ServerTcp : IServerTcp // TODO: IMPORTANT !!! IDisposable implementation
     {
         #region Constructors
 
