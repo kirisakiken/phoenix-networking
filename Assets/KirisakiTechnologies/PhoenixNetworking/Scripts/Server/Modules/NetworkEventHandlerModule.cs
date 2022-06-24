@@ -15,7 +15,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         public override Task Initialize(IGameSystem gameSystem)
         {
             _ServerModule = gameSystem.GetModule<IServerModule>();
-            _ServerModule.ClientConnectedHandler += ClientConnectedHandler;
+            _ServerModule.OnClientConnected += ClientConnectedHandler;
             _ServerModule.OnClientConnectionHandshakeCompleted += ClientConnectionHandshakeCompletedHandler;
             // _ServerModule.OnClientDisconnected += ClientDisconnectedHandler;
             // _ServerModule.OnClientPayloadReceived += ClientPayloadReceivedHandler;
