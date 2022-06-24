@@ -45,11 +45,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             // e.g. Invoke event where ClientGenerationModule subs and creates player prefabs properly
             Debug.Log($"Network Handler: Message from client to server, ClientId: {receivedId} | Name: {username}");
 
-            if (clientId != receivedId) // BUG: id dont match on more than 1 client
-                Debug.LogError($"Client Id and received id does not match!!!");
+            // TODO: return early from condition below and force client out of server. after fixing bug
+            if (clientId != receivedId)
+                Debug.LogError($"Client Id and received id does not match!!! | ClientId: {clientId} , ReceivedId: {receivedId}");
 
             // broadcast connected client to others
-            using (var broadcastPacket = _TcpPacketProvider.ClientConnectReceivedPacket(clientId, $"Network Event Handler Module: broadcasting connected client to all username: {username}"))
+            // TODO: handle sent data on client side
+            using (var broadcastPacket = _TcpPacketProvider.ClientConnectReceivedBroadcastPacket(clientId, $"Network Event Handler Module: broadcasting connected client to all id: {clientId} username: {username}"))
                 SendTcpDataToAllExceptOne(clientId, broadcastPacket);
         }
 
@@ -94,6 +96,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
             foreach (var client in _ServerModule.Clients.Values)
             {
+                if (!client.ServerTcp.IsConnected)
+                    continue;
+
                 if (client.Id == clientId)
                     continue;
 

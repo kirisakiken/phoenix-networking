@@ -34,6 +34,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client
                 ConnectToServer();
         }
 
+        private void OnApplicationQuit()
+        {
+            if (IsConnected)
+                Tcp.Socket.Close();
+        }
+
         public void ConnectToServer()
         {
             // TODO: return if already connected

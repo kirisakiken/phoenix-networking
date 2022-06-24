@@ -10,12 +10,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 
         public Packet ClientConnectedPacket(int clientId, string message) => BuildServerPacket(ServerPackets.ClientConnected, clientId, message);
 
-        public Packet ClientConnectReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
+        // BUG: buggy implementation. overrides client ids and creates infinite message loop. Not sure what the use of it
+        // public Packet ClientConnectReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
 
-        public Packet ClientConnectReceivedBroadcastPacket(int clientId, string message)
-        {
-            throw new NotImplementedException();
-        }
+        public Packet ClientConnectReceivedBroadcastPacket(int clientId, string message) => BuildServerPacket(ServerPackets.ConnectedClientBroadcast, clientId, message);
 
         public Packet ClientDisconnectedPacket(int clientId, string message)
         {

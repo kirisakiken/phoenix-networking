@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Sockets;
+using JetBrains.Annotations;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
+using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 {
@@ -51,6 +53,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
         #region IServerTcp Implementation
 
+        public bool IsConnected => Socket is { Connected: true };
+
         public int Id { get; }
         public TcpClient Socket { get; private set; }
         
@@ -64,19 +68,22 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
             _Stream = Socket.GetStream();
 
+            _ReceivedData = new Packet();
             _ReceiveBuffer = new byte[DataBufferSize];
-            _ReceivedData = new Packet(); // TODO: refactor packet file
 
             _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
         }
 
-        // TODO: rename to e.g. WriteStreamData/WriteData/WritePacket
+        // TODO: rename to e.g. WriteStreamData/WriteData/WritePacket/WriteAndSendData
         public void SendData(Packet packet)
         {
             try
             {
                 if (Socket == null)
                     return;
+
+                if (!IsConnected) // TODO: experiment with this statement
+                    Debug.LogError($"Can not send data to client which is not connected: clientId: {Id}");
 
                 _Stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null); // TODO: refactor packet file
             }

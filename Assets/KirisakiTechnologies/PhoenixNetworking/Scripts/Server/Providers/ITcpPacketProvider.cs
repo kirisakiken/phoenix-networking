@@ -13,13 +13,14 @@
         /// </remarks>
         Packet ClientConnectedPacket(int clientId, string message);
 
-        /// <summary>
-        ///     Packet to be build when client connect received (handshake)
-        /// </summary>
-        /// <remarks>
-        ///     This must be disposed properly
-        /// </remarks>
-        Packet ClientConnectReceivedPacket(int clientId, string message);
+        // BUG: implementation of this is buggy. Removing temporarily. Also not sure what the use of it.
+        // /// <summary>
+        // ///     Packet to be build when client connect received (handshake)
+        // /// </summary>
+        // /// <remarks>
+        // ///     This must be disposed properly
+        // /// </remarks>
+        // Packet ClientConnectReceivedPacket(int clientId, string message);
 
         /// <summary>
         ///     Packet to be build when client connect received and information related to that

@@ -8,12 +8,22 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
     public enum ServerPackets
     {
         ClientConnected = 1, // Initial Connection
+
+        /// <summary>
+        ///     Server side broadcast packet id of connected client
+        /// </summary>
+        ConnectedClientBroadcast = 2,
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         ConnectReceived = 1, // Handshake
+
+        /// <summary>
+        ///     Id of received broadcast packet of connected client
+        /// </summary>
+        ConnectedClientBroadcastReceived = 2,
     }
 
     public class Packet : IDisposable

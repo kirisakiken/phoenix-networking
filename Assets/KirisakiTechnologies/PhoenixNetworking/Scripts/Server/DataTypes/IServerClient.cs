@@ -13,6 +13,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
     // TODO: add description
     public interface IServerTcp
     {
+        bool IsConnected { get; }
+
         int Id { get; }
 
         TcpClient Socket { get; }
