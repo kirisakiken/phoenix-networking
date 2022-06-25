@@ -17,6 +17,16 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
             return $"Received ID: {id} | Message: {message}";
         }
 
+        // TODO: exporting receivedId with out keyword is not good implementation. Find better way e.g. data structures
+        public string DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet, out int receivedClientId) // TODO: change return type to data structure
+        {
+            var message = packet.ReadString();
+            var id = packet.ReadInt();
+
+            receivedClientId = id;
+            return $"Received Connected Client ID: {receivedClientId} | Broadcast Message: {message}";
+        }
+
         public Packet OnConnectWelcomeReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
 
         #endregion

@@ -18,6 +18,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         public event PacketEvent OnClientConnected;
 
+        public event PacketEvent OnClientConnectBroadcastReceived;
+
         public IClientTcp Tcp { get; private set; }
 
         public IReadOnlyDictionary<int, PacketHandler> PacketHandlers => _PacketHandlers;
@@ -73,10 +75,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         {
             // TODO: find better way to declare message recipes
             _PacketHandlers.Add((int) ServerPackets.ClientConnected, ClientConnected);
-            // _PacketHandlers.Add({ (int) ServerPackets.ConnectedClientBroadcast, null });
+            _PacketHandlers.Add((int) ServerPackets.ConnectedClientBroadcast, ClientConnectedBroadcastReceived);
         }
 
         private void ClientConnected(Packet packet) => OnClientConnected?.Invoke(packet);
+
+        private void ClientConnectedBroadcastReceived(Packet packet) => OnClientConnectBroadcastReceived?.Invoke(packet);
 
         #endregion
 
@@ -261,9 +265,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
                     _Stream.BeginRead(_ReceiveBuffer, 0, Socket.ReceiveBufferSize, DataReceiveCallback, null);
                 }
-                catch (Exception _)
+                catch (Exception e)
                 {
                     // TODO: disconnect
+                    Debug.LogWarning($"Error receiving data in callback: {e.Message}");
                 }
             }
 

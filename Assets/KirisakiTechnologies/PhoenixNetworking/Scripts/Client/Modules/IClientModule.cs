@@ -19,6 +19,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         /// </summary>
         event PacketEvent OnClientConnected;
 
+        event PacketEvent OnClientConnectBroadcastReceived;
+
         /// <summary>
         ///     Represents TCP instance of the client
         /// </summary>
