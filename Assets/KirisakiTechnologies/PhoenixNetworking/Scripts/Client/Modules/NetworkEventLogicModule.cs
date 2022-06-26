@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     // TODO: remember to add this under game system prefab client side
-    public class NetworkLogicModule : GameModuleBaseMono, INetworkEventLogicModule
+    public class NetworkEventLogicModule : GameModuleBaseMono, INetworkEventLogicModule
     {
         #region Overrides
 
