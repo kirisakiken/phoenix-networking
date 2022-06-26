@@ -25,6 +25,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         event PacketEvent OnClientConnectionHandshakeCompleted;
 
         /// <summary>
+        ///     
+        /// </summary>
+        event PacketEvent OnClientTcpMessagePayloadReceived;
+
+        /// <summary>
         ///     Represents Clients Id/ServerClient Collection
         /// </summary>
         IReadOnlyDictionary<int, IServerClient> Clients { get; }

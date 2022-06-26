@@ -19,6 +19,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             _ServerModule = gameSystem.GetModule<IServerModule>();
             _ServerModule.OnClientConnected += ClientConnectedHandler;
             _ServerModule.OnClientConnectionHandshakeCompleted += ClientConnectionHandshakeCompletedHandler;
+            _ServerModule.OnClientTcpMessagePayloadReceived += ClientTcpMessagePayloadReceivedHandler;
             // _ServerModule.OnClientDisconnected += ClientDisconnectedHandler;
             // _ServerModule.OnClientPayloadReceived += ClientPayloadReceivedHandler;
 
@@ -64,10 +65,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             // TODO: not a good implementation. Refactor if possible
             if (_ServerModule.Clients.ContainsKey(receivedId))
                 _ServerModule.Clients[receivedId].Name = receivedName;
-            
-            // TODO: add logic below to execute on client connected logic
-            // e.g. Invoke event where ClientGenerationModule subs and creates player prefabs properly
-            Debug.Log($"Network Handler: Message from client to server, ClientId: {receivedId} | Name: {receivedName}");
 
             // TODO: return early from condition below and force client out of server.
             if (clientId != receivedId)
@@ -87,6 +84,34 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                 SendTcpDataToAllExceptOne(clientId, broadcastPacket);
 
             // TODO: Handshake event and sub to it from NetworkEventLogicModule to implement logic needs to be executed
+        }
+
+        private void ClientTcpMessagePayloadReceivedHandler(int clientId, Packet packet)
+        {
+            var receivedId = packet.ReadInt();
+            var receivedMessage = packet.ReadString();
+
+            if (!_ServerModule.Clients.ContainsKey(receivedId))
+                throw new KeyNotFoundException($"Client with ID: {receivedId} not found in collection: {nameof(_ServerModule.Clients)}");
+            var name = _ServerModule.Clients[receivedId].Name;
+
+            // TODO: return early from condition below and force client out of server.
+            if (clientId != receivedId)
+                Debug.LogError($"Client Id and received id does not match!!! | ClientId: {clientId} , ReceivedId: {receivedId}");
+
+            // building broadcast message payload . . . TODO: IMPORTANT move to TcpPacketProvider or somewhere else
+            var payload = new TcpClientMessagePayload
+            {
+                ClientData = new ClientData
+                {
+                    ClientId = clientId,
+                    ClientName = name,
+                },
+                Message = receivedMessage,
+            };
+
+            using (var broadcastPacket = _TcpPacketProvider.ClientMessageBroadcastPacket(payload))
+                SendTcpDataToAll(broadcastPacket); // sending to all because we want sender to create message without adding additional handshake logic
         }
 
         private void ClientDisconnectedHandler(int clientId, Packet packet)

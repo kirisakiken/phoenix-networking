@@ -32,7 +32,22 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
             return payload;
         }
 
+        public TcpClientMessagePayload DeserializeOnClientTcpMessagePayloadReceivedPacket(Packet packet)
+        {
+            var message = packet.ReadString();
+
+            var payload = JsonConvert.DeserializeObject<TcpClientMessagePayload>(message);
+            if (payload == null)
+                throw new InvalidOperationException($"Failed to deserialize payload in {nameof(DeserializeOnClientTcpMessagePayloadReceivedPacket)}");
+
+            return payload;
+        }
+
+        // TODO: refactor with json data structures
         public Packet OnConnectWelcomeReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
+
+        // TODO: refactor with json data structures
+        public Packet TcpClientMessagePacket(int clientId, string message) => BuildClientPacket(ClientPackets.TcpMessagePayloadReceived, clientId, message);
 
         #endregion
 

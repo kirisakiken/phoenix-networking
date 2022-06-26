@@ -4,6 +4,7 @@ using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public delegate void TcpReceiveEvent<in T>(T payload);
+
     /// <summary>
     ///     Holds ownership of various network events
     /// </summary>
@@ -22,5 +23,18 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         ///     on receiving connected client payload
         /// </summary>
         event TcpReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectedBroadcastPackageReceived;
+
+        /// <summary>
+        ///     Invoked when a client sends message to server and server
+        ///     broadcasts that message to available clients
+        ///     Subscribers are expected to handle/execute logic
+        ///     on receiving message from other clients
+        /// </summary>
+        event TcpReceiveEvent<TcpClientMessagePayload> OnClientTcpMessagePayloadPackageReceived;
+
+        /// <summary>
+        ///     Used to send tcp client message to server
+        /// </summary>
+        void SendTcpClientMessageToServer(int clientId, string message);
     }
 }

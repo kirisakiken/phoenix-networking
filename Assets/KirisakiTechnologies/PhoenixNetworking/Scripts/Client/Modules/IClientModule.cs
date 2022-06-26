@@ -19,7 +19,20 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         /// </summary>
         event PacketEvent OnClientConnected;
 
+        /// <summary>
+        ///     
+        /// </summary>
         event PacketEvent OnClientConnectBroadcastReceived;
+
+        /// <summary>
+        ///     
+        /// </summary>
+        event PacketEvent OnClientTcpMessagePayloadReceived;
+
+        /// <summary>
+        ///     Client ID
+        /// </summary>
+        int Id { get; set; }
 
         /// <summary>
         ///     Represents TCP instance of the client

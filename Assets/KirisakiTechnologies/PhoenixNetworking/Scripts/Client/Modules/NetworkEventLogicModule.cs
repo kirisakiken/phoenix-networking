@@ -19,6 +19,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _NetworkEventHandlerModule = gameSystem.GetModule<INetworkEventHandlerModule>();
             _NetworkEventHandlerModule.OnInitialConnectPackageReceived += InitialConnectPackageReceivedHandler;
             _NetworkEventHandlerModule.OnClientConnectedBroadcastPackageReceived += ClientConnectBroadcastReceivedHandler;
+            _NetworkEventHandlerModule.OnClientTcpMessagePayloadPackageReceived += ClientTcpMessagePayloadPackageReceived;
 
             return base.Initialize(gameSystem);
         }
@@ -43,6 +44,16 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             Debug.LogWarning($"Not implemented Tcp Event Logic method handler. Implement {nameof(ClientConnectBroadcastReceivedHandler)}");
 
             var tx = GameObject.Find("OnConnectBroadcastText").GetComponent<Text>();
+            if (tx != null)
+                tx.text = JsonConvert.SerializeObject(payload);
+        }
+
+        private void ClientTcpMessagePayloadPackageReceived(TcpClientMessagePayload payload)
+        {
+            // TODO: implement
+            Debug.LogWarning($"Not implemented Tcp Event Logic method handler. Implement {nameof(ClientTcpMessagePayloadPackageReceived)}");
+
+            var tx = GameObject.Find("OnMessageBroadcastText").GetComponent<Text>();
             if (tx != null)
                 tx.text = JsonConvert.SerializeObject(payload);
         }

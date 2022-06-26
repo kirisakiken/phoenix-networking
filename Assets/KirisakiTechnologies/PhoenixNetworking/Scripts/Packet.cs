@@ -13,6 +13,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
         ///     Server side broadcast packet id of connected client
         /// </summary>
         ConnectedClientBroadcast = 2,
+
+        /// <summary>
+        ///     Payload message identifier to broadcast received client tcp payload
+        /// </summary>
+        TcpMessagePayloadReceived = 3,
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -25,6 +30,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
         ///     TODO: seems unnecessary since we don't need confirmation from client to server that broadcast is received
         /// </summary>
         ConnectedClientBroadcastReceived = 2,
+
+        /// <summary>
+        ///     Payload message identifier when received client tcp payload from server
+        /// </summary>
+        TcpMessagePayloadReceived = 3,
     }
 
     public class Packet : IDisposable

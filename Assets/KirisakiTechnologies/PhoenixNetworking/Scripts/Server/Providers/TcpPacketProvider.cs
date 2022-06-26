@@ -20,6 +20,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
             throw new NotImplementedException();
         }
 
+        public Packet ClientMessageBroadcastPacket(TcpClientMessagePayload payload) => BuildServerPacket(ServerPackets.TcpMessagePayloadReceived, payload.ClientData.ClientId, JsonConvert.SerializeObject(payload));
+
         #endregion
 
         #region Private

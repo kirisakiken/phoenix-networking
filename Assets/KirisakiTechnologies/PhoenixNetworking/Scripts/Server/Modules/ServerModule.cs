@@ -16,6 +16,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         public event NetworkEvent OnClientConnected;
         public event PacketEvent OnClientConnectionHandshakeCompleted;
+        public event PacketEvent OnClientTcpMessagePayloadReceived;
 
         public IReadOnlyDictionary<int, IServerClient> Clients => _Clients;
         public IReadOnlyDictionary<int, PacketHandler> PacketHandlers => _PacketHandlers;
@@ -58,15 +59,18 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         private void InitializeServerData()
         {
             for (var i = 1; i <= _MaxClientCount; ++i)
-                _Clients.Add(i, new DataTypes.ServerClient(i, this));
+                _Clients.Add(i, new ServerClient(i, this));
 
             _PacketHandlers.Add((int) ClientPackets.ConnectReceived, ClientConnected);
+            _PacketHandlers.Add((int) ClientPackets.TcpMessagePayloadReceived, ClientTcpMessagePayloadReceived);
 
             Debug.Log("ServerModule: Initialized Clients Collection");
             Debug.Log("ServerModule: Initialized Server Packet Handlers");
         }
 
         private void ClientConnected(int clientId, Packet packet) => OnClientConnectionHandshakeCompleted?.Invoke(clientId, packet);
+
+        private void ClientTcpMessagePayloadReceived(int clientId, Packet packet) => OnClientTcpMessagePayloadReceived?.Invoke(clientId, packet);
 
         private void InitializeTcp()
         {

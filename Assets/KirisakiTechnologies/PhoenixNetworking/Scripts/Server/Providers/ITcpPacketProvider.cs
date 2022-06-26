@@ -31,5 +31,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
         ///     This must be disposed properly
         /// </remarks>
         Packet ClientDisconnectedPacket(int clientId, string message);
+
+        /// <summary>
+        ///     Packet that needs to be broadcast when client sends message to server
+        /// </summary>
+        /// <remarks>
+        ///     This must be disposed properly
+        /// </remarks>
+        Packet ClientMessageBroadcastPacket(TcpClientMessagePayload payload);
     }
 }

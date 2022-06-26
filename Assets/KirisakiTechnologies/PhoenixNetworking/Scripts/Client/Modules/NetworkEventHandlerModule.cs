@@ -6,8 +6,6 @@ using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 
-using UnityEngine;
-
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public class NetworkEventHandlerModule : GameModuleBaseMono, INetworkEventHandlerModule
@@ -15,7 +13,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         #region INetworkEventHandlerModule Implementation
 
         public event TcpReceiveEvent<TcpInitialConnectPayload> OnInitialConnectPackageReceived;
-        public event TcpReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectedBroadcastPackageReceived; 
+        public event TcpReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectedBroadcastPackageReceived;
+        public event TcpReceiveEvent<TcpClientMessagePayload> OnClientTcpMessagePayloadPackageReceived;
+
+        public void SendTcpClientMessageToServer(int clientId, string message)
+        {
+            using (var messagePacket = _TcpPacketProvider.TcpClientMessagePacket(_ClientModule.Id, message))
+                SendTcpDataToServer(messagePacket);
+        }
 
         #endregion
 
@@ -26,6 +31,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _ClientModule = gameSystem.GetModule<IClientModule>();
             _ClientModule.OnClientConnected += ClientConnectedHandler;
             _ClientModule.OnClientConnectBroadcastReceived += ClientConnectedBroadcastReceivedHandler;
+            _ClientModule.OnClientTcpMessagePayloadReceived += ClientTcpMessagePayloadReceived;
 
             _TcpPacketProvider = gameSystem.GetProvider<ITcpPacketProvider>();
 
@@ -38,23 +44,26 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         private void ClientConnectedHandler(Packet receivedPacket)
         {
-            // TODO: execute initial connect logic (e.g. create player prefab (maybe invoke events and execute network logic with another module e.g. NetworkLogicModule)
             var receivedData = _TcpPacketProvider.DeserializeOnClientInitialConnectionPacket(receivedPacket);
-            Debug.Log($"ClientNetworkModule, received on connect data: {receivedData}");
+            _ClientModule.Id = receivedData.ClientId;
 
-            var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedData.ClientId, $"AliBaba");
-            SendTcpDataToServer(welcomeReceivedPacket);
+            // TODO: not a good place to send handshake here
+            using (var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedData.ClientId, $"AliBaba"))
+                SendTcpDataToServer(welcomeReceivedPacket);
 
             OnInitialConnectPackageReceived?.Invoke(receivedData);
         }
 
         private void ClientConnectedBroadcastReceivedHandler(Packet receivedPacket)
         {
-            // TODO: execute connected client broadcast logic (e.g. create connected player prefab)
             var receivedData = _TcpPacketProvider.DeserializeOnClientConnectedBroadcastReceivedPacket(receivedPacket);
-            Debug.Log($"ClientNetworkModule, received on connect connected broadcast data: {receivedData}");
-
             OnClientConnectedBroadcastPackageReceived?.Invoke(receivedData);
+        }
+
+        private void ClientTcpMessagePayloadReceived(Packet receivedPacket)
+        {
+            var receivedData = _TcpPacketProvider.DeserializeOnClientTcpMessagePayloadReceivedPacket(receivedPacket);
+            OnClientTcpMessagePayloadPackageReceived?.Invoke(receivedData);
         }
 
         #endregion

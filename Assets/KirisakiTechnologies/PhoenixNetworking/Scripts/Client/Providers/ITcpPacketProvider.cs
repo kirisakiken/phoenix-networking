@@ -18,9 +18,16 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         /// </summary>
         TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet);
 
+        TcpClientMessagePayload DeserializeOnClientTcpMessagePayloadReceivedPacket(Packet packet);
+
         /// <summary>
         ///     Packet needs to be build to send welcome received information packet
         /// </summary>
         Packet OnConnectWelcomeReceivedPacket(int clientId, string message);
+
+        /// <summary>
+        ///     Packet needs to be build to send tcp client message
+        /// </summary>
+        Packet TcpClientMessagePacket(int clientId, string message);
     }
 }

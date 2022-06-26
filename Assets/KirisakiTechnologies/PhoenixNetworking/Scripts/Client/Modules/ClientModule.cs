@@ -17,9 +17,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         #region IClientModule Implementation
 
         public event PacketEvent OnClientConnected;
-
         public event PacketEvent OnClientConnectBroadcastReceived;
+        public event PacketEvent OnClientTcpMessagePayloadReceived;
 
+        public int Id { get; set; }
         public IClientTcp Tcp { get; private set; }
 
         public IReadOnlyDictionary<int, PacketHandler> PacketHandlers => _PacketHandlers;
@@ -76,11 +77,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             // TODO: find better way to declare message recipes
             _PacketHandlers.Add((int) ServerPackets.ClientConnected, ClientConnected);
             _PacketHandlers.Add((int) ServerPackets.ConnectedClientBroadcast, ClientConnectedBroadcastReceived);
+            _PacketHandlers.Add((int) ServerPackets.TcpMessagePayloadReceived, ClientTcpMessagePayloadReceived);
         }
 
         private void ClientConnected(Packet packet) => OnClientConnected?.Invoke(packet);
 
         private void ClientConnectedBroadcastReceived(Packet packet) => OnClientConnectBroadcastReceived?.Invoke(packet);
+
+        private void ClientTcpMessagePayloadReceived(Packet packet) => OnClientTcpMessagePayloadReceived?.Invoke(packet);
 
         #endregion
 
