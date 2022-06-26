@@ -1,6 +1,9 @@
 ﻿using System;
 
 using KirisakiTechnologies.GameSystem.Scripts.Providers;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+
+using Newtonsoft.Json;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 {
@@ -8,10 +11,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
     {
         #region ITcpPacketProvider Implementation
 
-        public Packet ClientConnectedPacket(int clientId, string message) => BuildServerPacket(ServerPackets.ClientConnected, clientId, message);
-
-        // BUG: buggy implementation. overrides client ids and creates infinite message loop. Not sure what the use of it
-        // public Packet ClientConnectReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
+        public Packet ClientInitialConnectionPacket(TcpInitialConnectPayload payload) => BuildServerPacket(ServerPackets.ClientConnected, payload.ClientId, JsonConvert.SerializeObject(payload));
 
         public Packet ClientConnectReceivedBroadcastPacket(int clientId, string message) => BuildServerPacket(ServerPackets.ConnectedClientBroadcast, clientId, message);
 

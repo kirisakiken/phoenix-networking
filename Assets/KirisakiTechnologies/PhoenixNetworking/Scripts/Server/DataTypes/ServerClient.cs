@@ -21,13 +21,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         #region IServerClient Implementation
 
         public int Id { get; }
+        public string Name { get; set; }
         public IServerTcp ServerTcp { get; }
-
-        #endregion
-
-        #region Public
-
-        
 
         #endregion
 

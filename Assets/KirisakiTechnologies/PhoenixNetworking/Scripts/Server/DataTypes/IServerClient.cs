@@ -7,6 +7,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
     {
         int Id { get; }
 
+        string Name { get; set; }
+
         IServerTcp ServerTcp { get; }
     }
 

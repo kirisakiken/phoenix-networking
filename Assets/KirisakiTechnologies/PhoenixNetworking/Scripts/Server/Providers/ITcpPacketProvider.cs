@@ -1,4 +1,6 @@
-﻿namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
+﻿using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 {
     /// <summary>
     ///     Packet builder/provider for various network events
@@ -11,16 +13,7 @@
         /// <remarks>
         ///     This must be disposed properly
         /// </remarks>
-        Packet ClientConnectedPacket(int clientId, string message);
-
-        // BUG: implementation of this is buggy. Removing temporarily. Also not sure what the use of it.
-        // /// <summary>
-        // ///     Packet to be build when client connect received (handshake)
-        // /// </summary>
-        // /// <remarks>
-        // ///     This must be disposed properly
-        // /// </remarks>
-        // Packet ClientConnectReceivedPacket(int clientId, string message);
+        Packet ClientInitialConnectionPacket(TcpInitialConnectPayload payload);
 
         /// <summary>
         ///     Packet to be build when client connect received and information related to that

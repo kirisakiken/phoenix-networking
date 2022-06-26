@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers;
 using UnityEngine;
 
@@ -31,16 +33,37 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         private void ClientConnectedHandler(int clientId)
         {
-            // TODO: IMPORTANT!!! send available clients to connected client on connection
             // TODO: execute initial connect logic (e.g. (creating player in method ClientConnectionHandshakeCompletedHandler seems better) create player prefab, set clientId etc. and send that as packet to player
-            using (var packet = _TcpPacketProvider.ClientConnectedPacket(clientId, $"Network Module: Initial connect executed. Sending information to client: {clientId}"))
-                SendTcpData(clientId, packet);
+            // building payload . . . TODO: IMPORTANT move to TcpPacketProvider
+            var payload = new TcpInitialConnectPayload()
+            {
+                ClientId = clientId,
+                AvailableClients = new List<ClientData>()
+            };
+
+            foreach (var kvp in _ServerModule.Clients)
+            {
+                if (kvp.Value.ServerTcp.Id == clientId)
+                    continue;
+
+                if (!kvp.Value.ServerTcp.IsConnected)
+                    continue;
+
+                payload.AvailableClients.Add(new ClientData(){ ClientId = kvp.Value.Id, ClientName = kvp.Value.Name });
+            }
+
+            using (var iPacket = _TcpPacketProvider.ClientInitialConnectionPacket(payload))
+                SendTcpData(clientId, iPacket);
         }
 
         private void ClientConnectionHandshakeCompletedHandler(int clientId, Packet packet)
         {
             var receivedId = packet.ReadInt();
             var username = packet.ReadString();
+
+            // TODO: not a good implementation. Refactor if possible
+            if (_ServerModule.Clients.ContainsKey(receivedId))
+                _ServerModule.Clients[receivedId].Name = username;
             
             // TODO: add logic below to execute on client connected logic
             // e.g. Invoke event where ClientGenerationModule subs and creates player prefabs properly
