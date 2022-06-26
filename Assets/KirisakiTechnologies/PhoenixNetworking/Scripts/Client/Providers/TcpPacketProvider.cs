@@ -1,30 +1,43 @@
 ﻿using System;
 using KirisakiTechnologies.GameSystem.Scripts.Providers;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+using Newtonsoft.Json;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
 {
     public class TcpPacketProvider : GameProviderBaseMono, ITcpPacketProvider
     {
+        // TODO: add JsonSerializerSettings and implementations in methods
         #region ITcpPacketProvider Implementation
 
         // TODO: exporting receivedId with out keyword is not good implementation. Find better way e.g. data structures
-        public string DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId) // TODO: change return type to data structure
+        public TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId) // TODO: change return type to data structure
         {
             var message = packet.ReadString();
             var id = packet.ReadInt();
 
             receivedId = id;
-            return $"Received ID: {id} | Message: {message}";
+
+            var payload = JsonConvert.DeserializeObject<TcpInitialConnectPayload>(message);
+            if (payload == null)
+                throw new InvalidOperationException($"Failed to deserialize payload in {nameof(DeserializeOnClientInitialConnectionPacket)}");
+
+            return payload;
         }
 
         // TODO: exporting receivedId with out keyword is not good implementation. Find better way e.g. data structures
-        public string DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet, out int receivedClientId) // TODO: change return type to data structure
+        public TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet, out int receivedClientId) // TODO: change return type to data structure
         {
             var message = packet.ReadString();
             var id = packet.ReadInt();
 
             receivedClientId = id;
-            return $"Received Connected Client ID: {receivedClientId} | Broadcast Message: {message}";
+
+            var payload = JsonConvert.DeserializeObject<TcpConnectedClientBroadcastPayload>(message);
+            if (payload == null)
+                throw new InvalidOperationException($"Failed to deserialize payload in {nameof(DeserializeOnClientConnectedBroadcastReceivedPacket)}");
+
+            return payload;
         }
 
         public Packet OnConnectWelcomeReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);

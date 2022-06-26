@@ -5,18 +5,16 @@ using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
-using Newtonsoft.Json;
+
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public class NetworkEventHandlerModule : GameModuleBaseMono, INetworkEventHandlerModule
     {
-        #region MyRegion
+        #region INetworkEventHandlerModule Implementation
 
         public event TcpReceiveEvent<TcpInitialConnectPayload> OnInitialConnectPackageReceived;
-
         public event TcpReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectedBroadcastPackageReceived; 
 
         #endregion
@@ -47,9 +45,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedId, $"AliBaba");
             SendTcpDataToServer(welcomeReceivedPacket);
 
-            // TODO: do deserialization in TcpPacketProvider.DeserializeOnClientInitialConnectionPacket
-            var receivedDataAsObject = JsonConvert.DeserializeObject<TcpInitialConnectPayload>(receivedData);
-            OnInitialConnectPackageReceived?.Invoke(receivedDataAsObject);
+            OnInitialConnectPackageReceived?.Invoke(receivedData);
         }
 
         private void ClientConnectedBroadcastReceivedHandler(Packet receivedPacket)
@@ -58,9 +54,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             var receivedData = _TcpPacketProvider.DeserializeOnClientConnectedBroadcastReceivedPacket(receivedPacket, out var receivedClientId);
             Debug.Log($"ClientNetworkModule, received on connect connected broadcast data: {receivedData}");
 
-            // TODO: do deserialization in TcpPacketProvider
-            var receivedDataAsObject = JsonConvert.DeserializeObject<TcpConnectedClientBroadcastPayload>(receivedData);
-            OnClientConnectedBroadcastPackageReceived?.Invoke(receivedDataAsObject);
+            OnClientConnectedBroadcastPackageReceived?.Invoke(receivedData);
         }
 
         #endregion

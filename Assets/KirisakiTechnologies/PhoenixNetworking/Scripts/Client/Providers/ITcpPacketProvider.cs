@@ -1,4 +1,5 @@
 ﻿using KirisakiTechnologies.GameSystem.Scripts.Providers;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
 {
@@ -10,12 +11,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         /// <summary>
         ///     Received message from server on initial connection
         /// </summary>
-        string DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId);
+        TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId);
 
         /// <summary>
         ///     Received broadcast message from server when another client connects
         /// </summary>
-        string DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet, out int receivedClientId);
+        TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet, out int receivedClientId);
 
         /// <summary>
         ///     Packet needs to be build to send welcome received information packet
