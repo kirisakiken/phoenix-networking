@@ -10,13 +10,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         // TODO: add JsonSerializerSettings and implementations in methods
         #region ITcpPacketProvider Implementation
 
-        // TODO: exporting receivedId with out keyword is not good implementation. Find better way e.g. data structures
-        public TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId) // TODO: change return type to data structure
+        public TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet) // TODO: change return type to data structure
         {
             var message = packet.ReadString();
-            var id = packet.ReadInt();
-
-            receivedId = id;
 
             var payload = JsonConvert.DeserializeObject<TcpInitialConnectPayload>(message);
             if (payload == null)
@@ -25,13 +21,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
             return payload;
         }
 
-        // TODO: exporting receivedId with out keyword is not good implementation. Find better way e.g. data structures
-        public TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet, out int receivedClientId) // TODO: change return type to data structure
+        public TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet) // TODO: change return type to data structure
         {
             var message = packet.ReadString();
-            var id = packet.ReadInt();
-
-            receivedClientId = id;
 
             var payload = JsonConvert.DeserializeObject<TcpConnectedClientBroadcastPayload>(message);
             if (payload == null)

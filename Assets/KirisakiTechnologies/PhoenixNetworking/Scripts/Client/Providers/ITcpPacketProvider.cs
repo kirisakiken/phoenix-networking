@@ -11,12 +11,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         /// <summary>
         ///     Received message from server on initial connection
         /// </summary>
-        TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId);
+        TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet);
 
         /// <summary>
         ///     Received broadcast message from server when another client connects
         /// </summary>
-        TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet, out int receivedClientId);
+        TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet);
 
         /// <summary>
         ///     Packet needs to be build to send welcome received information packet

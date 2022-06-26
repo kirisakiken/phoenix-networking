@@ -39,10 +39,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void ClientConnectedHandler(Packet receivedPacket)
         {
             // TODO: execute initial connect logic (e.g. create player prefab (maybe invoke events and execute network logic with another module e.g. NetworkLogicModule)
-            var receivedData = _TcpPacketProvider.DeserializeOnClientInitialConnectionPacket(receivedPacket, out var receivedId);
+            var receivedData = _TcpPacketProvider.DeserializeOnClientInitialConnectionPacket(receivedPacket);
             Debug.Log($"ClientNetworkModule, received on connect data: {receivedData}");
 
-            var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedId, $"AliBaba");
+            var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedData.ClientId, $"AliBaba");
             SendTcpDataToServer(welcomeReceivedPacket);
 
             OnInitialConnectPackageReceived?.Invoke(receivedData);
@@ -51,7 +51,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void ClientConnectedBroadcastReceivedHandler(Packet receivedPacket)
         {
             // TODO: execute connected client broadcast logic (e.g. create connected player prefab)
-            var receivedData = _TcpPacketProvider.DeserializeOnClientConnectedBroadcastReceivedPacket(receivedPacket, out var receivedClientId);
+            var receivedData = _TcpPacketProvider.DeserializeOnClientConnectedBroadcastReceivedPacket(receivedPacket);
             Debug.Log($"ClientNetworkModule, received on connect connected broadcast data: {receivedData}");
 
             OnClientConnectedBroadcastPackageReceived?.Invoke(receivedData);
