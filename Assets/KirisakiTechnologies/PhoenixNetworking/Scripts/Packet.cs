@@ -22,6 +22,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
 
         /// <summary>
         ///     Id of received broadcast packet of connected client
+        ///     TODO: seems unnecessary since we don't need confirmation from client to server that broadcast is received
         /// </summary>
         ConnectedClientBroadcastReceived = 2,
     }

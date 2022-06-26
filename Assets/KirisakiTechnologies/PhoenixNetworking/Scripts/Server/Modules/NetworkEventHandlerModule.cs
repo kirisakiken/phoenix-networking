@@ -31,6 +31,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         private void ClientConnectedHandler(int clientId)
         {
+            // TODO: IMPORTANT!!! send available clients to connected client on connection
             // TODO: execute initial connect logic (e.g. (creating player in method ClientConnectionHandshakeCompletedHandler seems better) create player prefab, set clientId etc. and send that as packet to player
             using (var packet = _TcpPacketProvider.ClientConnectedPacket(clientId, $"Network Module: Initial connect executed. Sending information to client: {clientId}"))
                 SendTcpData(clientId, packet);

@@ -103,13 +103,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             public ClientTcp([NotNull] IClientModule clientModule, string ip, uint port, int receiveBufferSize, int sendBufferSize)
             {
-                if (clientModule == null)
-                    throw new ArgumentNullException(nameof(clientModule));
-
                 if (string.IsNullOrEmpty(ip))
                     throw new ArgumentNullException(nameof(ip));
 
-                _ClientModule = clientModule;
+                _ClientModule = clientModule ?? throw new ArgumentNullException(nameof(clientModule));
                 _Ip = ip;
                 _Port = port;
 
