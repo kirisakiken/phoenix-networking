@@ -52,31 +52,41 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                 payload.AvailableClients.Add(new ClientData { ClientId = kvp.Value.Id, ClientName = kvp.Value.Name });
             }
 
-            using (var iPacket = _TcpPacketProvider.ClientInitialConnectionPacket(payload))
-                SendTcpData(clientId, iPacket);
+            using (var packet = _TcpPacketProvider.ClientInitialConnectionPacket(payload))
+                SendTcpData(clientId, packet);
         }
 
         private void ClientConnectionHandshakeCompletedHandler(int clientId, Packet packet)
         {
             var receivedId = packet.ReadInt();
-            var username = packet.ReadString();
+            var receivedName = packet.ReadString();
 
             // TODO: not a good implementation. Refactor if possible
             if (_ServerModule.Clients.ContainsKey(receivedId))
-                _ServerModule.Clients[receivedId].Name = username;
+                _ServerModule.Clients[receivedId].Name = receivedName;
             
             // TODO: add logic below to execute on client connected logic
             // e.g. Invoke event where ClientGenerationModule subs and creates player prefabs properly
-            Debug.Log($"Network Handler: Message from client to server, ClientId: {receivedId} | Name: {username}");
+            Debug.Log($"Network Handler: Message from client to server, ClientId: {receivedId} | Name: {receivedName}");
 
-            // TODO: return early from condition below and force client out of server. after fixing bug
+            // TODO: return early from condition below and force client out of server.
             if (clientId != receivedId)
                 Debug.LogError($"Client Id and received id does not match!!! | ClientId: {clientId} , ReceivedId: {receivedId}");
 
-            // broadcast connected client to others
-            // TODO: handle sent data on client side
-            using (var broadcastPacket = _TcpPacketProvider.ClientConnectReceivedBroadcastPacket(clientId, $"Network Event Handler Module: broadcasting connected client to all id: {clientId} username: {username}"))
+            // building payload . . . TODO: IMPORTANT move to TcpPacketProvider or somewhere else
+            var payload = new TcpConnectedClientBroadcastPayload
+            {
+                ClientData = new ClientData
+                {
+                    ClientId = receivedId,
+                    ClientName = receivedName,
+                },
+            };
+
+            using (var broadcastPacket = _TcpPacketProvider.ClientConnectReceivedBroadcastPacket(payload))
                 SendTcpDataToAllExceptOne(clientId, broadcastPacket);
+
+            // TODO: Handshake event and sub to it from NetworkEventLogicModule to implement logic needs to be executed
         }
 
         private void ClientDisconnectedHandler(int clientId, Packet packet)

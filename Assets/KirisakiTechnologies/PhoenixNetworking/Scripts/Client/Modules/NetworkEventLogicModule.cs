@@ -3,7 +3,9 @@ using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
@@ -29,12 +31,20 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         {
             // TODO: implement
             Debug.LogWarning($"Not implemented Tcp Event Logic method handler. Implement {nameof(InitialConnectPackageReceivedHandler)}");
+
+            var tx = GameObject.Find("OnConnectText").GetComponent<Text>();
+            if (tx != null)
+                tx.text = JsonConvert.SerializeObject(payload);
         }
 
         private void ClientConnectBroadcastReceivedHandler(TcpConnectedClientBroadcastPayload payload)
         {
             // TODO: implement
             Debug.LogWarning($"Not implemented Tcp Event Logic method handler. Implement {nameof(ClientConnectBroadcastReceivedHandler)}");
+
+            var tx = GameObject.Find("OnConnectBroadcastText").GetComponent<Text>();
+            if (tx != null)
+                tx.text = JsonConvert.SerializeObject(payload);
         }
 
         #endregion

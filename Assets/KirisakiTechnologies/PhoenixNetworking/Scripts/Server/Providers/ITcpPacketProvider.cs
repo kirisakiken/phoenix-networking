@@ -22,7 +22,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
         /// <remarks>
         ///     This must be disposed properly
         /// </remarks>
-        Packet ClientConnectReceivedBroadcastPacket(int clientId, string message);
+        Packet ClientConnectReceivedBroadcastPacket(TcpConnectedClientBroadcastPayload payload);
 
         /// <summary>
         ///     Packet to be build when client disconnected

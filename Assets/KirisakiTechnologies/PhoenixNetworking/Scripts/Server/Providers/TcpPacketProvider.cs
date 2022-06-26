@@ -13,7 +13,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 
         public Packet ClientInitialConnectionPacket(TcpInitialConnectPayload payload) => BuildServerPacket(ServerPackets.ClientConnected, payload.ClientId, JsonConvert.SerializeObject(payload));
 
-        public Packet ClientConnectReceivedBroadcastPacket(int clientId, string message) => BuildServerPacket(ServerPackets.ConnectedClientBroadcast, clientId, message);
+        public Packet ClientConnectReceivedBroadcastPacket(TcpConnectedClientBroadcastPayload payload) => BuildServerPacket(ServerPackets.ConnectedClientBroadcast, payload.ClientData.ClientId, JsonConvert.SerializeObject(payload));
 
         public Packet ClientDisconnectedPacket(int clientId, string message)
         {
