@@ -8,7 +8,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         #region ITcpPacketProvider Implementation
 
         // TODO: exporting receivedId with out keyword is not good implementation. Find better way e.g. data structures
-        public string DeserializeOnClientConnectedPacket(Packet packet, out int receivedId) // TODO: change return type to data structure
+        public string DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId) // TODO: change return type to data structure
         {
             var message = packet.ReadString();
             var id = packet.ReadInt();

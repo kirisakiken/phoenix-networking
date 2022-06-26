@@ -10,7 +10,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         /// <summary>
         ///     Received message from server on initial connection
         /// </summary>
-        string DeserializeOnClientConnectedPacket(Packet packet, out int receivedId);
+        string DeserializeOnClientInitialConnectionPacket(Packet packet, out int receivedId);
 
         /// <summary>
         ///     Received broadcast message from server when another client connects

@@ -35,10 +35,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         {
             // TODO: execute initial connect logic (e.g. (creating player in method ClientConnectionHandshakeCompletedHandler seems better) create player prefab, set clientId etc. and send that as packet to player
             // building payload . . . TODO: IMPORTANT move to TcpPacketProvider
-            var payload = new TcpInitialConnectPayload()
+            var payload = new TcpInitialConnectPayload
             {
                 ClientId = clientId,
-                AvailableClients = new List<ClientData>()
+                AvailableClients = new List<ClientData>(),
             };
 
             foreach (var kvp in _ServerModule.Clients)
@@ -49,7 +49,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                 if (!kvp.Value.ServerTcp.IsConnected)
                     continue;
 
-                payload.AvailableClients.Add(new ClientData(){ ClientId = kvp.Value.Id, ClientName = kvp.Value.Name });
+                payload.AvailableClients.Add(new ClientData { ClientId = kvp.Value.Id, ClientName = kvp.Value.Name });
             }
 
             using (var iPacket = _TcpPacketProvider.ClientInitialConnectionPacket(payload))

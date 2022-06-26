@@ -4,6 +4,8 @@ using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +13,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public class NetworkEventHandlerModule : GameModuleBaseMono, INetworkEventHandlerModule
     {
+        #region MyRegion
+
+        public event TcpReceiveEvent<TcpInitialConnectPayload> OnInitialConnectPackageReceived;
+
+        public event TcpReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectedBroadcastPackageReceived; 
+
+        #endregion
+
         #region Overrides
 
         public override Task Initialize(IGameSystem gameSystem)
@@ -31,11 +41,15 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void ClientConnectedHandler(Packet receivedPacket)
         {
             // TODO: execute initial connect logic (e.g. create player prefab (maybe invoke events and execute network logic with another module e.g. NetworkLogicModule)
-            var receivedData = _TcpPacketProvider.DeserializeOnClientConnectedPacket(receivedPacket, out var receivedId);
+            var receivedData = _TcpPacketProvider.DeserializeOnClientInitialConnectionPacket(receivedPacket, out var receivedId);
             Debug.Log($"ClientNetworkModule, received on connect data: {receivedData}");
 
             var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedId, $"AliBaba");
             SendTcpDataToServer(welcomeReceivedPacket);
+
+            // TODO: do deserialization in TcpPacketProvider.DeserializeOnClientInitialConnectionPacket
+            var receivedDataAsObject = JsonConvert.DeserializeObject<TcpInitialConnectPayload>(receivedData);
+            OnInitialConnectPackageReceived?.Invoke(receivedDataAsObject);
         }
 
         private void ClientConnectedBroadcastReceivedHandler(Packet receivedPacket)
@@ -43,6 +57,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             // TODO: execute connected client broadcast logic (e.g. create connected player prefab)
             var receivedData = _TcpPacketProvider.DeserializeOnClientConnectedBroadcastReceivedPacket(receivedPacket, out var receivedClientId);
             Debug.Log($"ClientNetworkModule, received on connect connected broadcast data: {receivedData}");
+
+            // TODO: do deserialization in TcpPacketProvider
+            var receivedDataAsObject = JsonConvert.DeserializeObject<TcpConnectedClientBroadcastPayload>(receivedData);
+            OnClientConnectedBroadcastPackageReceived?.Invoke(receivedDataAsObject);
         }
 
         #endregion

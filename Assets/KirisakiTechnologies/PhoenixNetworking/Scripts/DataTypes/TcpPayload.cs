@@ -5,7 +5,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes
     /// <summary>
     ///     Represents a TCP Payload
     /// </summary>
-    public class TcpPayload
+    public class TcpPayload : Payload
     {
         /// <summary>
         ///     Packet ID
