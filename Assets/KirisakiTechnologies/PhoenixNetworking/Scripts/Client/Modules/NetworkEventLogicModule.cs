@@ -1,17 +1,25 @@
 ﻿using System.Threading.Tasks;
+
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
-using Newtonsoft.Json;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     // TODO: remember to add this under game system prefab client side
     public class NetworkEventLogicModule : GameModuleBaseMono, INetworkEventLogicModule
     {
+        #region INetworkEventLogicModule
+
+        public event NetworkLogicEvent<TcpInitialConnectPayload> OnTcpInitialConnectPayloadReceived;
+
+        public event NetworkLogicEvent<TcpConnectedClientBroadcastPayload> OnTcpConnectedClientBroadcastPayloadReceived;
+
+        public event NetworkLogicEvent<TcpClientMessagePayload> OnTcpClientMessagePayloadReceived;
+
+        #endregion
+
         #region Overrides
 
         public override Task Initialize(IGameSystem gameSystem)
@@ -28,35 +36,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         #region Event Handlers
 
-        private void InitialConnectPackageReceivedHandler(TcpInitialConnectPayload payload)
-        {
-            // TODO: implement
-            Debug.LogWarning($"Not implemented Tcp Event Logic method handler. Implement {nameof(InitialConnectPackageReceivedHandler)}");
+        private void InitialConnectPackageReceivedHandler(TcpInitialConnectPayload payload) => OnTcpInitialConnectPayloadReceived?.Invoke(payload);
 
-            var tx = GameObject.Find("OnConnectText").GetComponent<Text>();
-            if (tx != null)
-                tx.text = JsonConvert.SerializeObject(payload);
-        }
+        private void ClientConnectBroadcastReceivedHandler(TcpConnectedClientBroadcastPayload payload) => OnTcpConnectedClientBroadcastPayloadReceived?.Invoke(payload);
 
-        private void ClientConnectBroadcastReceivedHandler(TcpConnectedClientBroadcastPayload payload)
-        {
-            // TODO: implement
-            Debug.LogWarning($"Not implemented Tcp Event Logic method handler. Implement {nameof(ClientConnectBroadcastReceivedHandler)}");
-
-            var tx = GameObject.Find("OnConnectBroadcastText").GetComponent<Text>();
-            if (tx != null)
-                tx.text = JsonConvert.SerializeObject(payload);
-        }
-
-        private void ClientTcpMessagePayloadPackageReceived(TcpClientMessagePayload payload)
-        {
-            // TODO: implement
-            Debug.LogWarning($"Not implemented Tcp Event Logic method handler. Implement {nameof(ClientTcpMessagePayloadPackageReceived)}");
-
-            var tx = GameObject.Find("OnMessageBroadcastText").GetComponent<Text>();
-            if (tx != null)
-                tx.text = JsonConvert.SerializeObject(payload);
-        }
+        private void ClientTcpMessagePayloadPackageReceived(TcpClientMessagePayload payload) => OnTcpClientMessagePayloadReceived?.Invoke(payload);
 
         #endregion
 
