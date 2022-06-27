@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using KirisakiTechnologies.GameSystem.Scripts.Containers;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.GameSystem.Scripts.Providers;
-
+using KirisakiTechnologies.GameSystem.Scripts.Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace KirisakiTechnologies.GameSystem.Scripts
@@ -29,10 +30,15 @@ namespace KirisakiTechnologies.GameSystem.Scripts
 
         public IGameProvider GetOptionalProvider(Type providerType) => _GameProviders.FirstOrDefault(providerType.IsInstanceOfType);
 
+        public IGameTool GetTool(Type toolType) => GetOptionalTool(toolType) ?? throw new InvalidOperationException($"Tool type: {toolType.Name} not available");
+
+        public IGameTool GetOptionalTool(Type toolType) => _GameTools.FirstOrDefault(toolType.IsInstanceOfType);
+
         public async Task InitializeAndBegin()
         {
             _ModulesContainerCollection = GetComponentInChildren<IModulesContainerCollection>(); // TODO: ? Possible better way??
             _ProvidersContainerCollection = GetComponentInChildren<IProvidersContainerCollection>();
+            _ToolsContainerCollection = GetComponentInChildren<IToolsContainerCollection>();
 
             await InitializeAndBeginSystem(this);
         }
@@ -45,9 +51,11 @@ namespace KirisakiTechnologies.GameSystem.Scripts
 
         private IModulesContainerCollection _ModulesContainerCollection;
         private IProvidersContainerCollection _ProvidersContainerCollection;
+        private IToolsContainerCollection _ToolsContainerCollection;
 
         private readonly List<IGameModule> _GameModules = new List<IGameModule>();
         private readonly List<IGameProvider> _GameProviders = new List<IGameProvider>();
+        private readonly List<IGameTool> _GameTools = new List<IGameTool>();
 
         private async Task InitializeAndBeginSystem(IGameSystem system)
         {
@@ -59,12 +67,16 @@ namespace KirisakiTechnologies.GameSystem.Scripts
         {
             PopulateGameModules();
             PopulateGameProviders();
+            PopulateGameTools();
 
             foreach (var module in _GameModules)
                 await module.Initialize(system);
 
             foreach (var provider in _GameProviders)
                 await provider.Initialize(system);
+
+            foreach (var tool in _GameTools)
+                await tool.Initialize(system);
         }
 
         private async Task Begin(IGameSystem system)
@@ -74,6 +86,9 @@ namespace KirisakiTechnologies.GameSystem.Scripts
 
             foreach (var provider in _GameProviders)
                 await provider.Begin(system);
+
+            foreach (var tool in _GameTools)
+                await tool.Begin(system);
         }
 
         private void PopulateGameModules()
@@ -98,6 +113,18 @@ namespace KirisakiTechnologies.GameSystem.Scripts
 
             var providers = _ProvidersContainerCollection.Providers;
             _GameProviders.AddRange(providers);
+        }
+
+        private void PopulateGameTools()
+        {
+            if (_GameTools.Count > 0)
+                return;
+
+            if (_ToolsContainerCollection == null)
+                throw new NullReferenceException($"{nameof(_ToolsContainerCollection)} is not provided");
+
+            var tools = _ToolsContainerCollection.Tools;
+            _GameTools.AddRange(tools);
         }
 
         #endregion

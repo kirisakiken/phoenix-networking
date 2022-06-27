@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.GameSystem.Scripts.Providers;
+using KirisakiTechnologies.GameSystem.Scripts.Tools;
 
 namespace KirisakiTechnologies.GameSystem.Scripts
 {
@@ -31,6 +32,16 @@ namespace KirisakiTechnologies.GameSystem.Scripts
         ///     Tries to find provider with given type. Returns null if fails
         /// </summary>
         IGameProvider GetOptionalProvider([NotNull] Type type);
+
+        /// <summary>
+        ///     Tries to find tool with given type. Throws if fails
+        /// </summary>
+        IGameTool GetTool([NotNull] Type type);
+
+        /// <summary>
+        ///     Tries to find tool with given type. Returns null if fails
+        /// </summary>
+        IGameTool GetOptionalTool([NotNull] Type type);
 
         /// <summary>
         ///     Initializes and begins the Game System
