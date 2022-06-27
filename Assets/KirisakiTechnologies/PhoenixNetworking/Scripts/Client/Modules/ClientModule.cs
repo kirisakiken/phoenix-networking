@@ -34,6 +34,20 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             Tcp.Connect();
         }
 
+        public void ConnectToServer(string nickName, string ip, uint port)
+        {
+            if (Tcp is { IsConnected: true })
+                return;
+
+            Tcp ??= new ClientTcp(this, ip, port, _DataBufferSize, _DataBufferSize);
+            Tcp.Connect();
+        }
+
+        public void DisconnectFromServer()
+        {
+            Tcp?.Disconnect();
+        }
+
         #endregion
 
         #region Overrides
@@ -43,18 +57,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             InitializeClientTcpData();
 
             return Task.CompletedTask;
-        }
-
-        #endregion
-
-        #region Public
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.V))
-            {
-                ConnectToServer();
-            }
         }
 
         #endregion
@@ -92,7 +94,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         private void OnApplicationQuit()
         {
-            Tcp?.Disconnect();
+            DisconnectFromServer();
         }
 
         #endregion

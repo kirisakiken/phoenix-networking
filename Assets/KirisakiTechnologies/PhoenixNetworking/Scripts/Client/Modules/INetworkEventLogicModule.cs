@@ -32,5 +32,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         ///     is received
         /// </summary>
         event NetworkLogicEvent<TcpClientMessagePayload> OnTcpClientMessagePayloadReceived;
+
+        /// <summary>
+        ///     Event that needs to be invoked when server requests handshake package
+        /// </summary>
+        event NetworkLogicEvent<int> OnHandshakePacketRequested; // TODO convert in T from int to Payload type
     }
 }

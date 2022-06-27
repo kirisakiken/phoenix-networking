@@ -15,6 +15,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         public event TcpReceiveEvent<TcpInitialConnectPayload> OnInitialConnectPackageReceived;
         public event TcpReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectedBroadcastPackageReceived;
         public event TcpReceiveEvent<TcpClientMessagePayload> OnClientTcpMessagePayloadPackageReceived;
+        public event TcpReceiveEvent<int> OnHandshakePacketRequested;
+
+        public void SendTcpDataToServer(Packet packet)
+        {
+            packet.WriteLength();
+            _ClientModule.Tcp.SendData(packet);
+        }
 
         public void SendTcpClientMessageToServer(int clientId, string message)
         {
@@ -48,8 +55,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _ClientModule.Id = receivedData.ClientId;
 
             // TODO: not a good place to send handshake here
-            using (var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedData.ClientId, $"AliBaba"))
-                SendTcpDataToServer(welcomeReceivedPacket);
+            // using (var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedData.ClientId, $"AliBaba"))
+            //     SendTcpDataToServer(welcomeReceivedPacket);
+            OnHandshakePacketRequested?.Invoke(receivedData.ClientId);
 
             OnInitialConnectPackageReceived?.Invoke(receivedData);
         }
@@ -72,13 +80,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         private IClientModule _ClientModule;
         private ITcpPacketProvider _TcpPacketProvider;
-
-        private void SendTcpDataToServer(Packet packet)
-        {
-            packet.WriteLength();
-
-            _ClientModule.Tcp.SendData(packet);
-        }
 
         #endregion
     }

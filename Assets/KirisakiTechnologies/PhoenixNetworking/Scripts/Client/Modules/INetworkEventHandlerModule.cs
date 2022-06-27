@@ -33,6 +33,20 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event TcpReceiveEvent<TcpClientMessagePayload> OnClientTcpMessagePayloadPackageReceived;
 
         /// <summary>
+        ///     Invoked when client connected to server
+        ///     and server requests handshake information
+        ///     Subscribers are expected to handle/execute
+        ///     handshake logic and responsible of sending
+        ///     initial handshake information to server (e.g. clientId, nickName)
+        /// </summary>
+        event TcpReceiveEvent<int> OnHandshakePacketRequested; // TODO: convert in T from int to Payload type
+
+        /// <summary>
+        ///     Used to send any packet to server
+        /// </summary>
+        void SendTcpDataToServer(Packet packet);
+
+        /// <summary>
         ///     Used to send tcp client message to server
         /// </summary>
         void SendTcpClientMessageToServer(int clientId, string message);

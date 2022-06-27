@@ -45,9 +45,24 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         IReadOnlyDictionary<int, PacketHandler> PacketHandlers { get; }
 
         /// <summary>
-        ///     
+        ///     Connects to server
+        ///     TODO: deprecate
         /// </summary>
         void ConnectToServer();
+
+        /// <summary>
+        ///     Connects to server with given nickname,
+        ///     ip and port
+        /// </summary>
+        /// <param name="nickName"></param>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
+        void ConnectToServer(string nickName, string ip, uint port);
+
+        /// <summary>
+        ///     Disconnects from server
+        /// </summary>
+        void DisconnectFromServer();
     }
 
     // TODO: add descriptions

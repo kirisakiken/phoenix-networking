@@ -13,10 +13,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         #region INetworkEventLogicModule
 
         public event NetworkLogicEvent<TcpInitialConnectPayload> OnTcpInitialConnectPayloadReceived;
-
         public event NetworkLogicEvent<TcpConnectedClientBroadcastPayload> OnTcpConnectedClientBroadcastPayloadReceived;
-
         public event NetworkLogicEvent<TcpClientMessagePayload> OnTcpClientMessagePayloadReceived;
+        public event NetworkLogicEvent<int> OnHandshakePacketRequested;
 
         #endregion
 
@@ -28,6 +27,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _NetworkEventHandlerModule.OnInitialConnectPackageReceived += InitialConnectPackageReceivedHandler;
             _NetworkEventHandlerModule.OnClientConnectedBroadcastPackageReceived += ClientConnectBroadcastReceivedHandler;
             _NetworkEventHandlerModule.OnClientTcpMessagePayloadPackageReceived += ClientTcpMessagePayloadPackageReceived;
+            _NetworkEventHandlerModule.OnHandshakePacketRequested += HandshakePacketRequestedHandler;
 
             return base.Initialize(gameSystem);
         }
@@ -41,6 +41,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void ClientConnectBroadcastReceivedHandler(TcpConnectedClientBroadcastPayload payload) => OnTcpConnectedClientBroadcastPayloadReceived?.Invoke(payload);
 
         private void ClientTcpMessagePayloadPackageReceived(TcpClientMessagePayload payload) => OnTcpClientMessagePayloadReceived?.Invoke(payload);
+
+        // TODO: send handshake packet in here instead of expecting subscribers to send it.
+        private void HandshakePacketRequestedHandler(int payload) => OnHandshakePacketRequested?.Invoke(payload);
 
         #endregion
 

@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/ClientScene.unity
-    guid: 5af9a2da6f737fd469a91f248ce8e75d
+    path: Assets/MixChatter/Scenes/ChatApp-Client.unity
+    guid: 6d0a55bfdbb73934bbc98489cf1dd2ed
   m_configObjects: {}
