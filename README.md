@@ -35,3 +35,37 @@ Early project. Under development. Public contributions are welcome. Contact me a
                                |                                                         |
                                +---------------------------------------------------------+
 ```
+
+### Client Architecture
+
+```
+                                                                                          
+                                                          +---------------------------------------------------------+
+                                    OnClientConnected     | Sends initial connection payload to server              |
+                                +-----------------------> |                                                         |
+                                |                         +---------------------------------------------------------+
+                                |                                            +-----------------------------------------------------+
+                                |   OnClientConnectedInitialPayloadReceived  | Invoke OnInitialConnectionReceivedEvent subscribers |
+                                +------------------------------------------->| are expected to handle received message packet      |
+                                |                                            +-----------------------------------------------------+
+                                |
++------------------+            |
+|                  |            |                                        +---------------------------------------------------------+
+|                  |    TCP     |   OnClientDisconnectedMessageReceived  |   Under development                                     |
+|      Client      +---------->+|--------------------------------------->|                                                         |
+|                  |            |                                        +---------------------------------------------------------+
+|                  |            |
++--------+---------+            |
+         |                      |                        +----------------------------------------------------------+
+         |                      |   OnMessageReceived    | Invoke OnMessageReceived event, subscribers handles      |
+         |                      |   FromServer           | received message packet                                  |
+         |                      +----------------------->|                                                          |
+         |                                               +----------------------------------------------------------+
+         |
+         |
+         |                     +---------------------------------------------------------+
+         |        UDP          |   Under development                                     |
+         +-------------------->+                                                         |
+                               |                                                         |
+                               +---------------------------------------------------------+
+```
