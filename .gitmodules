@@ -1,0 +1,3 @@
+[submodule "Assets/KirisakiTechnologies/GameSystem"]
+	path = Assets/KirisakiTechnologies/GameSystem
+	url = git@github.com:kirisakiken/game-system.git
