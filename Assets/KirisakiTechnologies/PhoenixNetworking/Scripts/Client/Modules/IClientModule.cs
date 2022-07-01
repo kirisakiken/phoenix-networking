@@ -32,6 +32,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event PacketEvent OnClientTcpMessagePayloadReceived;
 
         /// <summary>
+        ///     
+        /// </summary>
+        event PacketEvent OnUdpPayloadReceived;
+
+        /// <summary>
         ///     Client ID
         /// </summary>
         int Id { get; set; }

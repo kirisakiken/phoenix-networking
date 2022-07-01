@@ -9,18 +9,25 @@ using JetBrains.Annotations;
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
-
+using TMPro;
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public class ClientModule : GameModuleBaseMono, IClientModule
     {
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.O))
+                ConnectToServer("Aliaa", Ip, (uint) Port);
+        }
+
         #region IClientModule Implementation
 
         public event PacketEvent OnClientConnected;
         public event PacketEvent OnClientConnectBroadcastReceived;
         public event PacketEvent OnClientTcpMessagePayloadReceived;
+        public event PacketEvent OnUdpPayloadReceived;
 
         public int Id { get; set; }
         public string Ip => _Ip;
@@ -85,6 +92,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _PacketHandlers.Add((int) ServerPackets.ClientConnected, ClientConnected);
             _PacketHandlers.Add((int) ServerPackets.ConnectedClientBroadcast, ClientConnectedBroadcastReceived);
             _PacketHandlers.Add((int) ServerPackets.TcpMessagePayloadReceived, ClientTcpMessagePayloadReceived);
+            _PacketHandlers.Add((int) ServerPackets.UdpTest, UdpTestReceived);
         }
 
         private void ClientConnected(Packet packet)
@@ -100,6 +108,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void ClientConnectedBroadcastReceived(Packet packet) => OnClientConnectBroadcastReceived?.Invoke(packet);
 
         private void ClientTcpMessagePayloadReceived(Packet packet) => OnClientTcpMessagePayloadReceived?.Invoke(packet);
+
+        private void UdpTestReceived(Packet packet) => OnUdpPayloadReceived?.Invoke(packet);
 
         #endregion
 
@@ -374,6 +384,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                     using (var packet = new Packet(data))
                     {
                         var packetId = packet.ReadInt();
+                        Debug.Log($"{packetId}|{packet}");
                         _ClientModule.PacketHandlers[packetId](packet);
                     }
                 });

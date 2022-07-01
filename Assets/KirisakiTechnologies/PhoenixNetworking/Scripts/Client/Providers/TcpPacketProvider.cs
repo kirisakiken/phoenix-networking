@@ -1,5 +1,6 @@
 ﻿using System;
 using KirisakiTechnologies.GameSystem.Scripts.Providers;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 using Newtonsoft.Json;
 
@@ -43,10 +44,23 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
             return payload;
         }
 
+        public UdpPayload DeserializeOnUdpPayloadReceivedPacket(Packet packet)
+        {
+            var message = packet.ReadString();
+
+            var payload = JsonConvert.DeserializeObject<UdpPayload>(message);
+            if (payload == null)
+                throw new InvalidOperationException($"Failed to deserialize payload in {nameof(DeserializeOnUdpPayloadReceivedPacket)}");
+
+            return payload;
+        }
+
         public Packet OnConnectWelcomeReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
 
 
         public Packet TcpClientMessagePacket(int clientId, string message) => BuildClientPacket(ClientPackets.TcpMessagePayloadReceived, clientId, message);
+
+        public Packet UdpClientMessagePacket(string message) => BuildClientUdpPacket(ClientPackets.UdpTestReceive, message);
 
         #endregion
 
@@ -56,6 +70,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         {
             var packet = new Packet((int) packetId);
             packet.Write(clientId);
+            packet.Write(message);
+
+            return packet;
+        }
+
+        private Packet BuildClientUdpPacket(ClientPackets packetId, string message)
+        {
+            var packet = new Packet((int)packetId);
             packet.Write(message);
 
             return packet;

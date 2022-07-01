@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using JetBrains.Annotations;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
@@ -10,10 +11,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
     {
         #region Constructors
 
-        public ServerClient(int id, IServerModule serverModule) // TODO: remove module from constructor when dependencies are refactored
+        public ServerClient([NotNull] IServerModule serverModule, int id) // TODO: remove module from constructor when dependencies are refactored
         {
             Id = id;
-            ServerTcp = new ServerTcp(id, DataBufferSize, serverModule);
+            ServerTcp = new ServerTcp(serverModule, id, DataBufferSize);
+            ServerUdp = new ServerUdp(serverModule, id);
         }
 
         #endregion
@@ -23,6 +25,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         public int Id { get; }
         public string Name { get; set; }
         public IServerTcp ServerTcp { get; }
+        public IServerUdp ServerUdp { get; }
 
         #endregion
 
@@ -33,15 +36,15 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         #endregion
     }
 
-    public class ServerTcp : IServerTcp // TODO: IMPORTANT !!! IDisposable implementation
+    public class ServerTcp : IServerTcp, IDisposable
     {
         #region Constructors
 
-        public ServerTcp(int id, int dataBufferSize, IServerModule serverModule) // TODO: remove module from constructor when dependencies are refactored
+        public ServerTcp([NotNull] IServerModule serverModule, int id, int dataBufferSize) // TODO: remove module from constructor when dependencies are refactored
         {
+            _ServerModule = serverModule;
             Id = id;
             DataBufferSize = dataBufferSize;
-            _ServerModule = serverModule;
         }
 
         #endregion
@@ -57,7 +60,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
         public void Connect(TcpClient socket)
         {
-            Socket = socket;
+            Socket = socket ?? throw new ArgumentNullException(nameof(socket));
             Socket.ReceiveBufferSize = DataBufferSize;
             Socket.SendBufferSize = DataBufferSize;
 
@@ -86,6 +89,18 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             {
                 throw new InvalidOperationException($"Unable to send data: {e.Message}");
             }
+        }
+
+        #endregion
+
+        #region IDisposable Implementation
+
+        // TODO: overall dispose check after full implementation
+        public void Dispose()
+        {
+            _Stream?.Dispose();
+            _ReceivedData?.Dispose();
+            Socket?.Dispose();
         }
 
         #endregion
@@ -170,6 +185,67 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
             return false;
         }
+
+        #endregion
+    }
+
+    public class ServerUdp : IServerUdp, IDisposable
+    {
+        #region Constructors
+
+        public ServerUdp([NotNull] IServerModule serverModule, int id)
+        {
+            _ServeModule = serverModule ?? throw new ArgumentNullException(nameof(serverModule));
+            Id = id;
+        }
+
+        #endregion
+
+        #region IServerUdp Implementation
+
+        public int Id { get; }
+        public IPEndPoint EndPoint { get; private set; }
+
+        public void Connect(IPEndPoint endPoint)
+        {
+            EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+        }
+
+        public void SendData(Packet packet)
+        {
+            _ServeModule.SendUdpData(EndPoint, packet);
+        }
+
+        public void HandleData(Packet packet)
+        {
+            var packetLength = packet.ReadInt();
+            var packetBytes = packet.ReadBytes(packetLength);
+
+            StaticThreadModule.ExecuteOnMainThread(() =>
+            {
+                using (var packet = new Packet(packetBytes))
+                {
+                    var packetId = packet.ReadInt();
+                    _ServeModule.PacketHandlers[packetId](Id, packet);
+                }
+            });
+        }
+
+        #endregion
+
+        #region IDisposable Implementation
+
+        // TODO: do overall dispose check after full implementation
+        public void Dispose()
+        {
+            
+        }
+
+        #endregion
+
+        #region Private
+
+        private IServerModule _ServeModule;
 
         #endregion
     }

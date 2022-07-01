@@ -4,6 +4,7 @@ using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public delegate void TcpReceiveEvent<in T>(T payload);
+    // public delegate void TcpReceiveEvent<in T>(T payload) where T : Payload;
 
     /// <summary>
     ///     Holds ownership of various network events
@@ -33,6 +34,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event TcpReceiveEvent<TcpClientMessagePayload> OnClientTcpMessagePayloadPackageReceived;
 
         /// <summary>
+        ///     Invoked when UDP payload received from server
+        ///     Subscribers are expected to handle/execute logic
+        ///     on receiving UDP payload from server
+        /// </summary>
+        event TcpReceiveEvent<UdpPayload> OnUdpPayloadReceived;
+
+        /// <summary>
         ///     Invoked when client connected to server
         ///     and server requests handshake information
         ///     Subscribers are expected to handle/execute
@@ -55,5 +63,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         ///     Used to send tcp client message to server
         /// </summary>
         void SendTcpClientMessageToServer(int clientId, string message);
+
+        /// <summary>
+        ///     Used to send udp client message to server
+        /// </summary>
+        void SendUdpClientMessageToServer(int clientId, string message);
     }
 }

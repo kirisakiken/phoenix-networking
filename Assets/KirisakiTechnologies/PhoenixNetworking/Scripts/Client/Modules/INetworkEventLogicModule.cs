@@ -34,6 +34,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event NetworkLogicEvent<TcpClientMessagePayload> OnTcpClientMessagePayloadReceived;
 
         /// <summary>
+        ///     Event that needs to be invoked when udp payload is received
+        /// </summary>
+        event NetworkLogicEvent<UdpPayload> OnUdpPayloadReceived; 
+
+        /// <summary>
         ///     Event that needs to be invoked when server requests handshake package
         /// </summary>
         event NetworkLogicEvent<int> OnHandshakePacketRequested; // TODO convert in T from int to Payload type
