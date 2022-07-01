@@ -22,6 +22,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             if (!_Enable)
                 return;
 
+            // TODO: REFACTOR
+            // SENDING SERVER TICK PAYLOAD VIA UDP
             using (var packet = new Packet((int)ServerPackets.UdpTest))
             {
                 _UdpPayload.Message = transform.position.ToString();

@@ -15,6 +15,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
     {
         private void Update()
         {
+            // TODO: REFACTOR
+            // SENDING UDP PAYLOAD MESSAGE TO SERVER VIA UDP
+            // TODO: change message id to PlayerUdpPayload and have handler on ServerSide, e.g. invoke events to move player
             if (Input.GetKeyDown(KeyCode.P))
             {
                 var msg = JsonConvert.SerializeObject(new UdpPayload()
