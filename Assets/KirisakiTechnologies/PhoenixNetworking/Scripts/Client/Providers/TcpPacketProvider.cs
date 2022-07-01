@@ -10,7 +10,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         // TODO: add JsonSerializerSettings and implementations in methods
         #region ITcpPacketProvider Implementation
 
-        public TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet) // TODO: change return type to data structure
+        public TcpInitialConnectPayload DeserializeOnClientInitialConnectionPacket(Packet packet)
         {
             var message = packet.ReadString();
 
@@ -21,7 +21,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
             return payload;
         }
 
-        public TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet) // TODO: change return type to data structure
+        public TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet)
         {
             var message = packet.ReadString();
 
@@ -43,10 +43,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
             return payload;
         }
 
-        // TODO: refactor with json data structures
         public Packet OnConnectWelcomeReceivedPacket(int clientId, string message) => BuildClientPacket(ClientPackets.ConnectReceived, clientId, message);
 
-        // TODO: refactor with json data structures
+
         public Packet TcpClientMessagePacket(int clientId, string message) => BuildClientPacket(ClientPackets.TcpMessagePayloadReceived, clientId, message);
 
         #endregion

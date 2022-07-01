@@ -23,6 +23,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _ClientModule.Tcp.SendData(packet);
         }
 
+        public void SendUdpDataToServer(Packet packet)
+        {
+            packet.WriteLength();
+            _ClientModule.Udp.SendData(packet);
+        }
+
         public void SendTcpClientMessageToServer(int clientId, string message)
         {
             using (var messagePacket = _TcpPacketProvider.TcpClientMessagePacket(_ClientModule.Id, message))

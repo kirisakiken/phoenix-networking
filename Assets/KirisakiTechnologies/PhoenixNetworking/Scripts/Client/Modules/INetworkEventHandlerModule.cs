@@ -42,9 +42,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event TcpReceiveEvent<int> OnHandshakePacketRequested; // TODO: convert in T from int to Payload type
 
         /// <summary>
-        ///     Used to send any packet to server
+        ///     Used to send any packet to server via TCP protocol
         /// </summary>
         void SendTcpDataToServer(Packet packet);
+
+        /// <summary>
+        ///     Used to send any packet to server via UDP protocol
+        /// </summary>
+        void SendUdpDataToServer(Packet packet);
 
         /// <summary>
         ///     Used to send tcp client message to server
