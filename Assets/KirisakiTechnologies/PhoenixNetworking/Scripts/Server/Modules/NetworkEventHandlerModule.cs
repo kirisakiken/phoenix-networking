@@ -1,17 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 {
     public class NetworkEventHandlerModule : GameModuleBaseMono, INetworkEventHandlerModule
     {
+        [SerializeField]
+        private bool _Enable;
+        private UdpPayload _UdpPayload = new UdpPayload();
+        private void FixedUpdate()
+        {
+            if (!_Enable)
+                return;
+
+            // TODO: REFACTOR
+            // SENDING SERVER TICK PAYLOAD VIA UDP
+            using (var packet = new Packet((int)ServerPackets.UdpTest))
+            {
+                _UdpPayload.Message = transform.position.ToString();
+                var msg = JsonConvert.SerializeObject(_UdpPayload);
+                packet.Write(msg);
+                SendUdpDataToAll(packet);
+            }
+        }
+
         #region Overrides
 
         public override Task Initialize(IGameSystem gameSystem)
@@ -21,7 +42,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             _ServerModule.OnClientConnectionHandshakeCompleted += ClientConnectionHandshakeCompletedHandler;
             _ServerModule.OnClientTcpMessagePayloadReceived += ClientTcpMessagePayloadReceivedHandler;
             // _ServerModule.OnClientDisconnected += ClientDisconnectedHandler;
-            // _ServerModule.OnClientPayloadReceived += ClientPayloadReceivedHandler;
+            _ServerModule.OnClientUdpPayloadReceived += ClientUdpPayloadReceivedHandler;
 
             _TcpPacketProvider = gameSystem.GetProvider<ITcpPacketProvider>();
 
@@ -119,9 +140,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             throw new NotImplementedException($"{nameof(ClientDisconnectedHandler)} not implemented!");
         }
 
-        private void ClientPayloadReceivedHandler(int clientId, Packet packet)
+        private void ClientUdpPayloadReceivedHandler(int clientId, Packet packet)
         {
-            throw new NotImplementedException($"{nameof(ClientPayloadReceivedHandler)} not implemented!");
+            var message = packet.ReadString();
+            Debug.Log($"UDP message from client: {clientId}, message: {message}");
         }
 
         #endregion
@@ -146,7 +168,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             packet.WriteLength();
 
             foreach (var client in _ServerModule.Clients.Values)
+            {
+                if (!client.ServerTcp.IsConnected)
+                    continue;
+
                 client.ServerTcp.SendData(packet);
+            }
         }
 
         private void SendTcpDataToAllExceptOne(int clientId, Packet packet)
@@ -162,6 +189,33 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                     continue;
 
                 client.ServerTcp.SendData(packet);
+            }
+        }
+
+        private void SendUdpData(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+            _ServerModule.Clients[clientId].ServerUdp.SendData(packet);
+        }
+
+        private void SendUdpDataToAll(Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var client in _ServerModule.Clients.Values) // TODO: add IsConnected check
+                client.ServerUdp.SendData(packet);
+        }
+
+        private void SendUdpDataToAllExceptOne(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var client in _ServerModule.Clients.Values) // TODO: add IsConnected check
+            {
+                if (client.Id == clientId)
+                    continue;
+
+                client.ServerUdp.SendData(packet);
             }
         }
 

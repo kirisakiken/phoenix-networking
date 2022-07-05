@@ -18,6 +18,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
         ///     Payload message identifier to broadcast received client tcp payload
         /// </summary>
         TcpMessagePayloadReceived = 3,
+
+        UdpTest = 4,
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -35,6 +37,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
         ///     Payload message identifier when received client tcp payload from server
         /// </summary>
         TcpMessagePayloadReceived = 3,
+
+        UdpTestReceive = 4,
     }
 
     public class Packet : IDisposable

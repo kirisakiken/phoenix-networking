@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
+
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
@@ -30,14 +32,34 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event PacketEvent OnClientTcpMessagePayloadReceived;
 
         /// <summary>
+        ///     
+        /// </summary>
+        event PacketEvent OnUdpPayloadReceived;
+
+        /// <summary>
         ///     Client ID
         /// </summary>
         int Id { get; set; }
 
         /// <summary>
+        ///     IP
+        /// </summary>
+        string Ip { get; }
+
+        /// <summary>
+        ///     Port
+        /// </summary>
+        int Port { get; }
+
+        /// <summary>
         ///     Represents TCP instance of the client
         /// </summary>
         IClientTcp Tcp { get; }
+
+        /// <summary>
+        ///     Represents UDP instance of the client
+        /// </summary>
+        IClientUdp Udp { get; }
 
         /// <summary>
         ///     
@@ -54,9 +76,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         ///     Connects to server with given nickname,
         ///     ip and port
         /// </summary>
-        /// <param name="nickName"></param>
-        /// <param name="ip"></param>
-        /// <param name="port"></param>
         void ConnectToServer(string nickName, string ip, uint port);
 
         /// <summary>
@@ -65,31 +84,62 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         void DisconnectFromServer();
     }
 
-    // TODO: add descriptions
+    /// <summary>
+    ///     Represents a client TCP data class
+    ///     Responsible of having definition of connect/disconnect and send data methods
+    /// </summary>
     public interface IClientTcp
     {
         /// <summary>
-        ///     
+        ///     TCP Socket of the Client
         /// </summary>
         TcpClient Socket { get; }
 
         /// <summary>
-        ///     
+        ///     Connection state of the client
+        ///     True if connected, false otherwise
         /// </summary>
         bool IsConnected { get; }
 
         /// <summary>
-        ///     
+        ///     Establishes a TCP connection to server
         /// </summary>
         void Connect();
 
         /// <summary>
-        ///     
+        ///     Disconnects from server if connected
         /// </summary>
         void Disconnect();
 
         /// <summary>
-        ///     
+        ///     Writes given packet to server via TCP
+        /// </summary>
+        void SendData(Packet packet);
+    }
+
+    /// <summary>
+    ///     Represents a client UDP data class
+    ///     Responsible of having definition of connect/disconnect and send data methods
+    /// </summary>
+    public interface IClientUdp
+    {
+        /// <summary>
+        ///     UDP Socket of the Client
+        /// </summary>
+        UdpClient Socket { get; }
+
+        /// <summary>
+        ///     IP Endpoint of UDP connection
+        /// </summary>
+        IPEndPoint EndPoint { get; }
+
+        /// <summary>
+        ///     Establishes a UDP connection to server with given local port
+        /// </summary>
+        void Connect(int localPort);
+
+        /// <summary>
+        ///     Writes given packet to server via UDP
         /// </summary>
         void SendData(Packet packet);
     }

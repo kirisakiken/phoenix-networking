@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -8,20 +9,31 @@ using JetBrains.Annotations;
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
+using TMPro;
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public class ClientModule : GameModuleBaseMono, IClientModule
     {
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.O))
+                ConnectToServer("Aliaa", Ip, (uint) Port);
+        }
+
         #region IClientModule Implementation
 
         public event PacketEvent OnClientConnected;
         public event PacketEvent OnClientConnectBroadcastReceived;
         public event PacketEvent OnClientTcpMessagePayloadReceived;
+        public event PacketEvent OnUdpPayloadReceived;
 
         public int Id { get; set; }
+        public string Ip => _Ip;
+        public int Port => (int) _Port;
         public IClientTcp Tcp { get; private set; }
+        public IClientUdp Udp { get; private set; }
 
         public IReadOnlyDictionary<int, PacketHandler> PacketHandlers => _PacketHandlers;
 
@@ -80,13 +92,24 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _PacketHandlers.Add((int) ServerPackets.ClientConnected, ClientConnected);
             _PacketHandlers.Add((int) ServerPackets.ConnectedClientBroadcast, ClientConnectedBroadcastReceived);
             _PacketHandlers.Add((int) ServerPackets.TcpMessagePayloadReceived, ClientTcpMessagePayloadReceived);
+            _PacketHandlers.Add((int) ServerPackets.UdpTest, UdpTestReceived);
         }
 
-        private void ClientConnected(Packet packet) => OnClientConnected?.Invoke(packet);
+        private void ClientConnected(Packet packet)
+        {
+            OnClientConnected?.Invoke(packet);
+
+            // TODO: remove this from out of here
+            // establish udp connection using TCP connection's port
+            Udp ??= new ClientUdp(this);
+            Udp.Connect(((IPEndPoint) Tcp.Socket.Client.LocalEndPoint).Port);
+        }
 
         private void ClientConnectedBroadcastReceived(Packet packet) => OnClientConnectBroadcastReceived?.Invoke(packet);
 
         private void ClientTcpMessagePayloadReceived(Packet packet) => OnClientTcpMessagePayloadReceived?.Invoke(packet);
+
+        private void UdpTestReceived(Packet packet) => OnUdpPayloadReceived?.Invoke(packet);
 
         #endregion
 
@@ -102,8 +125,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         #region Nested Types
 
         // TODO: investigate if this should be seperated into another file e.g. DataTypes/IClientTcp
-        // TODO: investigate if entire functionality can be moved into IClientModule?
-        public class ClientTcp : IClientTcp, IDisposable
+        private class ClientTcp : IClientTcp, IDisposable
         {
             #region Constructors
 
@@ -272,6 +294,121 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                 {
                     // TODO: disconnect
                     Debug.LogWarning($"Error receiving data in callback: {e.Message}");
+                }
+            }
+
+            #endregion
+        }
+
+        private class ClientUdp : IClientUdp, IDisposable
+        {
+            #region Constructors
+
+            public ClientUdp([NotNull] IClientModule clientModule)
+            {
+                _ClientModule = clientModule ?? throw new ArgumentNullException(nameof(clientModule));
+                if (!IPAddress.TryParse(_ClientModule.Ip, out var ip))
+                    throw new ArgumentException($"Given ip: {_ClientModule.Ip} is not parseable to IP address");
+
+                _EndPoint = new IPEndPoint(ip, clientModule.Port);
+            }
+
+            #endregion
+
+            #region IClientUdp Implementation
+
+            public UdpClient Socket { get; private set; }
+            public IPEndPoint EndPoint => _EndPoint;
+
+            public void Connect(int localPort)
+            {
+                Socket = new UdpClient(localPort);
+
+                Socket.Connect(EndPoint);
+                Socket.BeginReceive(ReceiveCallback, null);
+
+                // Sending initial packet in order to open local port for UDP
+                using (var packet = new Packet())
+                    SendData(packet);
+            }
+
+            public void SendData(Packet packet)
+            {
+                try
+                {
+                    packet.InsertInt(_ClientModule.Id);
+
+                    if (Socket != null)
+                        Socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
+
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error sending UDP data: {e.Message}");
+                }
+            }
+
+            #endregion
+
+            #region IDisposable Implementation
+
+            // TODO: Dispose check after full implementation
+            public void Dispose()
+            {
+                Socket?.Dispose();
+            }
+
+            #endregion
+
+            #region Public
+
+            
+
+            #endregion
+
+            #region Private
+
+            private IClientModule _ClientModule;
+            private IPEndPoint _EndPoint;
+
+            private void HandleData(byte[] data)
+            {
+                using (var packet = new Packet(data))
+                {
+                    var packetLength = packet.ReadInt();
+                    data = packet.ReadBytes(packetLength);
+                }
+
+                StaticThreadModule.ExecuteOnMainThread(() =>
+                {
+                    using (var packet = new Packet(data))
+                    {
+                        var packetId = packet.ReadInt();
+                        Debug.Log($"{packetId}|{packet}");
+                        _ClientModule.PacketHandlers[packetId](packet);
+                    }
+                });
+            }
+
+            #endregion
+
+            #region Event Handlers
+
+            private void ReceiveCallback(IAsyncResult result)
+            {
+                try
+                {
+                    var data = Socket.EndReceive(result, ref _EndPoint);
+                    Socket.BeginReceive(ReceiveCallback, null);
+
+                    if (data.Length < 4)
+                        return;
+
+                    HandleData(data);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error on UDP receive callback : {e.Message}");
                 }
             }
 

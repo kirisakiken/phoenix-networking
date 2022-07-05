@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Net;
+
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes;
 
@@ -30,6 +32,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         event PacketEvent OnClientTcpMessagePayloadReceived;
 
         /// <summary>
+        /// 
+        /// </summary>
+        event PacketEvent OnClientUdpPayloadReceived;
+
+        /// <summary>
         ///     Represents Clients Id/ServerClient Collection
         /// </summary>
         IReadOnlyDictionary<int, IServerClient> Clients { get; }
@@ -39,5 +46,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         ///     TODO: refactor key type (int to enum)
         /// </summary>
         IReadOnlyDictionary<int, PacketHandler> PacketHandlers { get; }
+
+        /// <summary>
+        ///     Sends given packet via UDP protocol
+        /// </summary>
+        void SendUdpData(IPEndPoint clientEndPoint, Packet packet);
     }
 }
