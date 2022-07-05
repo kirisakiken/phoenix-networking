@@ -41,6 +41,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event TcpReceiveEvent<UdpPayload> OnUdpPayloadReceived;
 
         /// <summary>
+        ///     Invoked when UDP Server tick received from server
+        ///     Subscribers are expected to handle/execute logic
+        ///     on receiving server tick. E.g. update entities,
+        ///     update time.
+        /// </summary>
+        event TcpReceiveEvent<UdpServerTickPayload> OnUdpServerTickReceived;
+
+        /// <summary>
         ///     Invoked when client connected to server
         ///     and server requests handshake information
         ///     Subscribers are expected to handle/execute

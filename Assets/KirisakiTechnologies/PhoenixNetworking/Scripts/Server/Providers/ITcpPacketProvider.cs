@@ -39,5 +39,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
         ///     This must be disposed properly
         /// </remarks>
         Packet ClientMessageBroadcastPacket(TcpClientMessagePayload payload);
+
+        /// <summary>
+        ///     Packet that needs to be build for Udp Server Tick broadcast
+        /// </summary>
+        /// <remarks>
+        ///     This must be disposed properly
+        /// </remarks>
+        Packet UdpServerTickPacket(UdpServerTickPayload payload);
     }
 }

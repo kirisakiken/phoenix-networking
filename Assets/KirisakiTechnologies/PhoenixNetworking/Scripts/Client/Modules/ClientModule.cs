@@ -28,6 +28,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         public event PacketEvent OnClientConnectBroadcastReceived;
         public event PacketEvent OnClientTcpMessagePayloadReceived;
         public event PacketEvent OnUdpPayloadReceived;
+        public event PacketEvent OnUdpServerTickReceived;
 
         public int Id { get; set; }
         public string Ip => _Ip;
@@ -58,6 +59,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         public void DisconnectFromServer()
         {
             Tcp?.Disconnect();
+            Udp?.Disconnect();
         }
 
         #endregion
@@ -93,6 +95,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _PacketHandlers.Add((int) ServerPackets.ConnectedClientBroadcast, ClientConnectedBroadcastReceived);
             _PacketHandlers.Add((int) ServerPackets.TcpMessagePayloadReceived, ClientTcpMessagePayloadReceived);
             _PacketHandlers.Add((int) ServerPackets.UdpTest, UdpTestReceived);
+            _PacketHandlers.Add((int) ServerPackets.UdpServerTick, UdpServerTickReceived);
         }
 
         private void ClientConnected(Packet packet)
@@ -110,6 +113,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void ClientTcpMessagePayloadReceived(Packet packet) => OnClientTcpMessagePayloadReceived?.Invoke(packet);
 
         private void UdpTestReceived(Packet packet) => OnUdpPayloadReceived?.Invoke(packet);
+
+        private void UdpServerTickReceived(Packet packet) => OnUdpServerTickReceived?.Invoke(packet);
 
         #endregion
 
@@ -332,6 +337,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                     SendData(packet);
             }
 
+            public void Disconnect()
+            {
+                Socket.Close();
+            }
+
             public void SendData(Packet packet)
             {
                 try
@@ -368,7 +378,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             #region Private
 
-            private IClientModule _ClientModule;
+            private readonly IClientModule _ClientModule;
             private IPEndPoint _EndPoint;
 
             private void HandleData(byte[] data)
@@ -384,7 +394,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                     using (var packet = new Packet(data))
                     {
                         var packetId = packet.ReadInt();
-                        Debug.Log($"{packetId}|{packet}");
                         _ClientModule.PacketHandlers[packetId](packet);
                     }
                 });

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
 {
+    // TODO: rename to NetworkPacketProvider
     public class TcpPacketProvider : GameProviderBaseMono, ITcpPacketProvider
     {
         // TODO: add JsonSerializerSettings and implementations in methods
@@ -51,6 +52,17 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
             var payload = JsonConvert.DeserializeObject<UdpPayload>(message);
             if (payload == null)
                 throw new InvalidOperationException($"Failed to deserialize payload in {nameof(DeserializeOnUdpPayloadReceivedPacket)}");
+
+            return payload;
+        }
+
+        public UdpServerTickPayload DeserializeOnUdpServerTickReceivedPacket(Packet packet)
+        {
+            var message = packet.ReadString();
+
+            var payload = JsonConvert.DeserializeObject<UdpServerTickPayload>(message);
+            if (payload == null)
+                throw new InvalidOperationException($"Failed to deserialize payload in {nameof(DeserializeOnUdpServerTickReceivedPacket)}");
 
             return payload;
         }

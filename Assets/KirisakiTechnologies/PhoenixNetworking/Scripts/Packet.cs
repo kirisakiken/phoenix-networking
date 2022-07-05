@@ -20,6 +20,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
         TcpMessagePayloadReceived = 3,
 
         UdpTest = 4,
+
+        UdpServerTick = 5,
+
+        UdpClientInputTick = 6, // TODO: unnecessary. server should not send client input tick or handle it
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -39,6 +43,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts
         TcpMessagePayloadReceived = 3,
 
         UdpTestReceive = 4,
+
+        UdpServerTickReceived = 5, // TODO: unnecessary. client should not send server tick to server and server should not bother handling it
+
+        UdpClientInputTickReceived = 6,
     }
 
     public class Packet : IDisposable

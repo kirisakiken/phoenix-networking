@@ -180,6 +180,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         private void OnApplicationQuit()
         {
             _TcpListener.Stop();
+            _UdpListener.Close();
         }
 
         #endregion
