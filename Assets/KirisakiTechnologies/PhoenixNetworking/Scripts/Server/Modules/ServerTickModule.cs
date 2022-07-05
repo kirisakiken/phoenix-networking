@@ -15,7 +15,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
     {
         #region IServerTickModule Implementation
 
-        public bool CanExecuteTick => _CanExecuteTick;
+        public bool CanExecuteTick => _CanExecuteTick; // TODO: implement modify (e.g. on udp established)
 
         public int TickRate => _TickRate;
 
@@ -73,6 +73,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         private void BuildPayload()
         {
             // TODO: implement
+            // get added, modified and removed entities
+            // add those to payload (excluding unmodified properties of those)
         }
 
         #endregion
