@@ -22,7 +22,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         event PacketEvent OnClientConnected;
 
         /// <summary>
-        ///     
+        ///     TODO: add description
         /// </summary>
         event PacketEvent OnClientConnectBroadcastReceived;
 
@@ -35,6 +35,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         ///     
         /// </summary>
         event PacketEvent OnUdpPayloadReceived;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        event PacketEvent OnUdpServerTickReceived;
 
         /// <summary>
         ///     Client ID

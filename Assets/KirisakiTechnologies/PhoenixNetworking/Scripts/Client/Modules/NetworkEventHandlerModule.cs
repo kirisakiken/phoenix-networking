@@ -33,7 +33,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         public event TcpReceiveEvent<TcpInitialConnectPayload> OnInitialConnectPackageReceived;
         public event TcpReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectedBroadcastPackageReceived;
         public event TcpReceiveEvent<TcpClientMessagePayload> OnClientTcpMessagePayloadPackageReceived;
-        public event TcpReceiveEvent<UdpPayload> OnUdpPayloadReceived; 
+        public event TcpReceiveEvent<UdpPayload> OnUdpPayloadReceived;
+        public event TcpReceiveEvent<UdpServerTickPayload> OnUdpServerTickReceived; 
         public event TcpReceiveEvent<int> OnHandshakePacketRequested;
 
         public void SendTcpDataToServer(Packet packet)
@@ -71,6 +72,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _ClientModule.OnClientConnectBroadcastReceived += ClientConnectedBroadcastReceivedHandler;
             _ClientModule.OnClientTcpMessagePayloadReceived += ClientTcpMessagePayloadReceived;
             _ClientModule.OnUdpPayloadReceived += UdpPayloadReceivedHandler;
+            _ClientModule.OnUdpServerTickReceived += UdpServerTickReceivedHandler;
 
             _TcpPacketProvider = gameSystem.GetProvider<ITcpPacketProvider>();
 
@@ -109,8 +111,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void UdpPayloadReceivedHandler(Packet receivedPacket)
         {
             var receivedData = _TcpPacketProvider.DeserializeOnUdpPayloadReceivedPacket(receivedPacket);
-            Debug.Log($"Client received udp message: {receivedData.Message}");
             OnUdpPayloadReceived?.Invoke(receivedData);
+        }
+
+        private void UdpServerTickReceivedHandler(Packet receivedPacket)
+        {
+            var receivedData = _TcpPacketProvider.DeserializeOnUdpServerTickReceivedPacket(receivedPacket);
+            OnUdpServerTickReceived?.Invoke(receivedData);
         }
 
         #endregion

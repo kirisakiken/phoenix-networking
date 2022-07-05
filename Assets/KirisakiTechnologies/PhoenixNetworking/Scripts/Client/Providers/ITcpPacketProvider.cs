@@ -19,7 +19,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         TcpConnectedClientBroadcastPayload DeserializeOnClientConnectedBroadcastReceivedPacket(Packet packet);
 
         /// <summary>
-        /// 
+        /// TODO: add description
         /// </summary>
         TcpClientMessagePayload DeserializeOnClientTcpMessagePayloadReceivedPacket(Packet packet);
 
@@ -27,6 +27,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         /// 
         /// </summary>
         UdpPayload DeserializeOnUdpPayloadReceivedPacket(Packet packet);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        UdpServerTickPayload DeserializeOnUdpServerTickReceivedPacket(Packet packet);
 
         /// <summary>
         ///     Packet needs to be build to send welcome received information packet

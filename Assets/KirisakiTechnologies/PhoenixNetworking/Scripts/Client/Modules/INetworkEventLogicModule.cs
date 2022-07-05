@@ -6,7 +6,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
     /// <summary>
     ///     Represents generic network logic event
     /// </summary>
-    public delegate void NetworkLogicEvent<in T>(T payload);
+    public delegate void NetworkLogicEvent<in T>(T payload); // TODO: where : T is Payload
 
     /// <summary>
     ///     Responsible of handling logic needs to be executed
@@ -37,6 +37,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         ///     Event that needs to be invoked when udp payload is received
         /// </summary>
         event NetworkLogicEvent<UdpPayload> OnUdpPayloadReceived; 
+
+        /// <summary>
+        ///     Event that needs to be invoked when udp server tick payload is received
+        /// </summary>
+        event NetworkLogicEvent<UdpServerTickPayload> OnUdpServerTickReceived; 
 
         /// <summary>
         ///     Event that needs to be invoked when server requests handshake package

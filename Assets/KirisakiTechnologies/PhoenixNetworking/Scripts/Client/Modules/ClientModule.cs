@@ -28,6 +28,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         public event PacketEvent OnClientConnectBroadcastReceived;
         public event PacketEvent OnClientTcpMessagePayloadReceived;
         public event PacketEvent OnUdpPayloadReceived;
+        public event PacketEvent OnUdpServerTickReceived;
 
         public int Id { get; set; }
         public string Ip => _Ip;
@@ -93,6 +94,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _PacketHandlers.Add((int) ServerPackets.ConnectedClientBroadcast, ClientConnectedBroadcastReceived);
             _PacketHandlers.Add((int) ServerPackets.TcpMessagePayloadReceived, ClientTcpMessagePayloadReceived);
             _PacketHandlers.Add((int) ServerPackets.UdpTest, UdpTestReceived);
+            _PacketHandlers.Add((int) ServerPackets.UdpServerTick, UdpServerTickReceived);
         }
 
         private void ClientConnected(Packet packet)
@@ -110,6 +112,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private void ClientTcpMessagePayloadReceived(Packet packet) => OnClientTcpMessagePayloadReceived?.Invoke(packet);
 
         private void UdpTestReceived(Packet packet) => OnUdpPayloadReceived?.Invoke(packet);
+
+        private void UdpServerTickReceived(Packet packet) => OnUdpServerTickReceived?.Invoke(packet);
 
         #endregion
 
