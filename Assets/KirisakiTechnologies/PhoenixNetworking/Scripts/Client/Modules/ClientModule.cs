@@ -59,6 +59,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         public void DisconnectFromServer()
         {
             Tcp?.Disconnect();
+            Udp?.Disconnect();
         }
 
         #endregion
@@ -336,6 +337,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                     SendData(packet);
             }
 
+            public void Disconnect()
+            {
+                Socket.Close();
+            }
+
             public void SendData(Packet packet)
             {
                 try
@@ -372,7 +378,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             #region Private
 
-            private IClientModule _ClientModule;
+            private readonly IClientModule _ClientModule;
             private IPEndPoint _EndPoint;
 
             private void HandleData(byte[] data)
@@ -388,7 +394,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                     using (var packet = new Packet(data))
                     {
                         var packetId = packet.ReadInt();
-                        Debug.Log($"{packetId}|{packet}");
                         _ClientModule.PacketHandlers[packetId](packet);
                     }
                 });

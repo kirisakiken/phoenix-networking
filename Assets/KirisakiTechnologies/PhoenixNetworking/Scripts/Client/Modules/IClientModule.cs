@@ -144,6 +144,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         void Connect(int localPort);
 
         /// <summary>
+        ///     Disconnects UDP connection if already connected
+        /// </summary>
+        void Disconnect();
+
+        /// <summary>
         ///     Writes given packet to server via UDP
         /// </summary>
         void SendData(Packet packet);

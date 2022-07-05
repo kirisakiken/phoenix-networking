@@ -22,6 +22,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 
         public Packet ClientMessageBroadcastPacket(TcpClientMessagePayload payload) => BuildServerPacket(ServerPackets.TcpMessagePayloadReceived, payload.ClientData.ClientId, JsonConvert.SerializeObject(payload));
 
+        public Packet UdpServerTickPacket(UdpServerTickPayload payload) => BuildServerPacket(ServerPackets.UdpServerTick, JsonConvert.SerializeObject(payload));
+
         #endregion
 
         #region Private
@@ -31,6 +33,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
             var packet = new Packet((int) packetId);
             packet.Write(message);
             packet.Write(clientId);
+
+            return packet;
+        }
+
+        private Packet BuildServerPacket(ServerPackets packetId, string message)
+        {
+            var packet = new Packet((int) packetId);
+            packet.Write(message);
 
             return packet;
         }

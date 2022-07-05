@@ -33,6 +33,37 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             }
         }
 
+        #region INetworkEventHandlerModule Implementation
+
+        public void SendUdpData(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+            _ServerModule.Clients[clientId].ServerUdp.SendData(packet);
+        }
+
+        public void SendUdpDataToAll(Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var client in _ServerModule.Clients.Values) // TODO: add IsConnected check
+                client.ServerUdp.SendData(packet);
+        }
+
+        public void SendUdpDataToAllExceptOne(int clientId, Packet packet)
+        {
+            packet.WriteLength();
+
+            foreach (var client in _ServerModule.Clients.Values) // TODO: add IsConnected check
+            {
+                if (client.Id == clientId)
+                    continue;
+
+                client.ServerUdp.SendData(packet);
+            }
+        }
+
+        #endregion
+
         #region Overrides
 
         public override Task Initialize(IGameSystem gameSystem)
@@ -189,33 +220,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                     continue;
 
                 client.ServerTcp.SendData(packet);
-            }
-        }
-
-        private void SendUdpData(int clientId, Packet packet)
-        {
-            packet.WriteLength();
-            _ServerModule.Clients[clientId].ServerUdp.SendData(packet);
-        }
-
-        private void SendUdpDataToAll(Packet packet)
-        {
-            packet.WriteLength();
-
-            foreach (var client in _ServerModule.Clients.Values) // TODO: add IsConnected check
-                client.ServerUdp.SendData(packet);
-        }
-
-        private void SendUdpDataToAllExceptOne(int clientId, Packet packet)
-        {
-            packet.WriteLength();
-
-            foreach (var client in _ServerModule.Clients.Values) // TODO: add IsConnected check
-            {
-                if (client.Id == clientId)
-                    continue;
-
-                client.ServerUdp.SendData(packet);
             }
         }
 
