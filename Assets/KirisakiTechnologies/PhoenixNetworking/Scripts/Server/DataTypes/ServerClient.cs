@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+
 using JetBrains.Annotations;
+
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
+
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes

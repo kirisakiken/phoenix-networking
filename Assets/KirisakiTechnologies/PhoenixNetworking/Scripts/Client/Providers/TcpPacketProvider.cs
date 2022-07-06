@@ -1,7 +1,8 @@
 ﻿using System;
+
 using KirisakiTechnologies.GameSystem.Scripts.Providers;
-using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+
 using Newtonsoft.Json;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers

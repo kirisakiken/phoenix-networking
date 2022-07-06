@@ -42,7 +42,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         private INetworkEventHandlerModule _NetworkEventHandlerModule;
         private ITcpPacketProvider _TcpPacketProvider;
 
-        private bool CanSendClientInputTickPayload => _ClientModule?.Udp != null;
+        private bool CanSendClientInputTickPayload => _ClientModule?.Udp != null; // TODO: check if connection available instead null check
 
         private void ClientTick()
         {

@@ -2,8 +2,6 @@
 
 using Newtonsoft.Json;
 
-using UnityEngine;
-
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes
 {
     // TODO: add description
