@@ -74,6 +74,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
 
         public Packet UdpClientMessagePacket(string message) => BuildClientUdpPacket(ClientPackets.UdpTestReceive, message);
 
+        public Packet UdpClientInputPacket(UdpClientInputPayload payload) => BuildClientUdpPacket(ClientPackets.UdpClientInputTickReceived, JsonConvert.SerializeObject(payload));
+
         #endregion
 
         #region Private
