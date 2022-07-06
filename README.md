@@ -6,6 +6,11 @@ Early project. Under development. Public contributions are welcome. Contact me a
 
 ---
 
+### Network Communications and Event Diagrams;
+[ServerTick <-> ClientInputTick](https://github.com/kirisakiken/phoenix-networking/blob/master/.docs/PhoenixNetworking/UDP/UDP_ClientInputTick_ServerTick_Diagram.png) 
+
+---
+
 ### Server Architecture
 
 ```
@@ -30,8 +35,8 @@ Early project. Under development. Public contributions are welcome. Contact me a
          |
          |
          |                     +---------------------------------------------------------+
-         |        UDP          |   Under development                                     |
-         +-------------------->+                                                         |
+         |        UDP          |   Broadcasts all added, modified and removed            |
+         +-------------------->+   entities to available UDP Clients                     |
                                |                                                         |
                                +---------------------------------------------------------+
 ```
