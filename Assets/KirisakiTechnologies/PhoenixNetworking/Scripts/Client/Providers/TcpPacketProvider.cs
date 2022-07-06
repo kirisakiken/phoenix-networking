@@ -1,7 +1,8 @@
 ﻿using System;
+
 using KirisakiTechnologies.GameSystem.Scripts.Providers;
-using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+
 using Newtonsoft.Json;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
@@ -73,6 +74,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         public Packet TcpClientMessagePacket(int clientId, string message) => BuildClientPacket(ClientPackets.TcpMessagePayloadReceived, clientId, message);
 
         public Packet UdpClientMessagePacket(string message) => BuildClientUdpPacket(ClientPackets.UdpTestReceive, message);
+
+        public Packet UdpClientInputPacket(UdpClientInputPayload payload) => BuildClientUdpPacket(ClientPackets.UdpClientInputTickReceived, JsonConvert.SerializeObject(payload));
 
         #endregion
 

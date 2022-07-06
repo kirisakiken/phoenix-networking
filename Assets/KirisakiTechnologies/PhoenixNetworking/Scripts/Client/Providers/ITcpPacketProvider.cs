@@ -47,5 +47,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers
         ///     Packet needs to be build to send udp client message
         /// </summary>
         Packet UdpClientMessagePacket(string message);
+
+        /// <summary>
+        ///     Packet needs to be build to send udp client input message
+        /// </summary>
+        Packet UdpClientInputPacket(UdpClientInputPayload payload);
     }
 }

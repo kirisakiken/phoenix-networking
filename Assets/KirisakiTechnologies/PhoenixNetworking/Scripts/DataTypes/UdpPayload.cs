@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes
 {
@@ -42,7 +41,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes
     public class UdpClientInputPayload : Payload
     {
         [JsonProperty("modified_keys")]
-        public Dictionary<KeyCode, bool> ModifiedKeys { get; set; } // TODO: replace KeyCode with internally defined key code enum
+        public Dictionary<ClientInputKey, bool> ModifiedKeys { get; set; }
     }
 
     public class GenericNetworkEntity
