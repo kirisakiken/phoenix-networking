@@ -47,5 +47,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
         ///     This must be disposed properly
         /// </remarks>
         Packet UdpServerTickPacket(UdpServerTickPayload payload);
+
+        /// <summary>
+        ///     Packet that needs to be deserialized when receiving Udp Client
+        ///     Input Payload packet
+        /// </summary>
+        UdpClientInputPayload DeserializeUdpClientInputPayloadPacket(Packet packet);
     }
 }

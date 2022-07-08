@@ -20,6 +20,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         public event PacketEvent OnClientConnectionHandshakeCompleted;
         public event PacketEvent OnClientTcpMessagePayloadReceived;
         public event PacketEvent OnClientUdpPayloadReceived;
+        public event PacketEvent OnUdpClientInputTickReceived; 
 
         public IReadOnlyDictionary<int, IServerClient> Clients => _Clients;
         public IReadOnlyDictionary<int, PacketHandler> PacketHandlers => _PacketHandlers;
@@ -82,6 +83,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             _PacketHandlers.Add((int) ClientPackets.ConnectReceived, ClientConnected);
             _PacketHandlers.Add((int) ClientPackets.TcpMessagePayloadReceived, ClientTcpMessagePayloadReceived);
             _PacketHandlers.Add((int) ClientPackets.UdpTestReceive, ClientUdpPayloadReceived);
+            _PacketHandlers.Add((int) ClientPackets.UdpClientInputTickReceived, UdpClientInputTickReceived);
 
             Debug.Log("ServerModule: Initialized Clients Collection");
             Debug.Log("ServerModule: Initialized Server Packet Handlers");
@@ -93,6 +95,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         private void ClientUdpPayloadReceived(int clientId, Packet packet) => OnClientUdpPayloadReceived?.Invoke(clientId, packet);
 
+        private void UdpClientInputTickReceived(int clientId, Packet packet) => OnUdpClientInputTickReceived?.Invoke(clientId, packet);
         private void InitializeTcp()
         {
             _TcpListener = new TcpListener(IPAddress.Any, _Port);

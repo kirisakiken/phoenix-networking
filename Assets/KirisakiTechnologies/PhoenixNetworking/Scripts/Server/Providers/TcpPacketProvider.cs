@@ -24,6 +24,17 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers
 
         public Packet UdpServerTickPacket(UdpServerTickPayload payload) => BuildServerPacket(ServerPackets.UdpServerTick, JsonConvert.SerializeObject(payload));
 
+        public UdpClientInputPayload DeserializeUdpClientInputPayloadPacket(Packet packet)
+        {
+            var message = packet.ReadString();
+
+            var payload = JsonConvert.DeserializeObject<UdpClientInputPayload>(message);
+            if (payload == null)
+                throw new InvalidOperationException($"Failed to deserialize payload in {nameof(DeserializeUdpClientInputPayloadPacket)}");
+
+            return payload;
+        }
+
         #endregion
 
         #region Private
