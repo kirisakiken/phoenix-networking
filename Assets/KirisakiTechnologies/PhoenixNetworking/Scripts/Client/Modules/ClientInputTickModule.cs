@@ -46,6 +46,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         private void ClientTick()
         {
+            if (_ClientInputPayload.ModifiedKeys.Count == 0) // TODO: move this somewhere else (e.g. CanSendClientInputTickPayload)
+                return;
+
             using (var packet = _TcpPacketProvider.UdpClientInputPacket(_ClientInputPayload))
                 _NetworkEventHandlerModule.SendUdpDataToServer(packet);
 

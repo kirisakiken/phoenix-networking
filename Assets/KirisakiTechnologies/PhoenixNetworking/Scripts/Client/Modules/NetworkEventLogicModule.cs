@@ -54,6 +54,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         private void UdpServerTickReceivedHandler(UdpServerTickPayload payload)
         {
+            // TODO: remove
             Debug.Log("Received udp server tick. Contents;");
             payload.AddedEntities.ForEach(entity =>
             {

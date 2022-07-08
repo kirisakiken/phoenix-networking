@@ -32,9 +32,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         event PacketEvent OnClientTcpMessagePayloadReceived;
 
         /// <summary>
-        /// 
+        /// TODO: add description
         /// </summary>
         event PacketEvent OnClientUdpPayloadReceived;
+
+        /// <summary>
+        /// TODO: add description
+        /// </summary>
+        event PacketEvent OnUdpClientInputTickReceived;
 
         /// <summary>
         ///     Represents Clients Id/ServerClient Collection

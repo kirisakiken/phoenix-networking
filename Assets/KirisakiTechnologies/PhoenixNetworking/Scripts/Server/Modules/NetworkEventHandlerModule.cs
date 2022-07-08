@@ -7,33 +7,16 @@ using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Providers;
-using Newtonsoft.Json;
+
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 {
     public class NetworkEventHandlerModule : GameModuleBaseMono, INetworkEventHandlerModule
     {
-        [SerializeField]
-        private bool _Enable;
-        private UdpPayload _UdpPayload = new UdpPayload();
-        private void FixedUpdate()
-        {
-            if (!_Enable)
-                return;
-
-            // TODO: REFACTOR
-            // SENDING SERVER TICK PAYLOAD VIA UDP
-            using (var packet = new Packet((int)ServerPackets.UdpTest))
-            {
-                _UdpPayload.Message = transform.position.ToString();
-                var msg = JsonConvert.SerializeObject(_UdpPayload);
-                packet.Write(msg);
-                SendUdpDataToAll(packet);
-            }
-        }
-
         #region INetworkEventHandlerModule Implementation
+
+        public event NetworkReceiveEvent<UdpClientInputPayload> OnUdpClientInputPayloadReceived;
 
         public void SendUdpData(int clientId, Packet packet)
         {
@@ -74,6 +57,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             _ServerModule.OnClientTcpMessagePayloadReceived += ClientTcpMessagePayloadReceivedHandler;
             // _ServerModule.OnClientDisconnected += ClientDisconnectedHandler;
             _ServerModule.OnClientUdpPayloadReceived += ClientUdpPayloadReceivedHandler;
+            _ServerModule.OnUdpClientInputTickReceived += UdpClientInputTickReceived;
 
             _TcpPacketProvider = gameSystem.GetProvider<ITcpPacketProvider>();
 
@@ -171,10 +155,17 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             throw new NotImplementedException($"{nameof(ClientDisconnectedHandler)} not implemented!");
         }
 
+        // TODO: remove
         private void ClientUdpPayloadReceivedHandler(int clientId, Packet packet)
         {
             var message = packet.ReadString();
             Debug.Log($"UDP message from client: {clientId}, message: {message}");
+        }
+
+        private void UdpClientInputTickReceived(int clientId, Packet packet)
+        {
+            var receivedData = _TcpPacketProvider.DeserializeUdpClientInputPayloadPacket(packet);
+            OnUdpClientInputPayloadReceived?.Invoke(clientId, receivedData);
         }
 
         #endregion
