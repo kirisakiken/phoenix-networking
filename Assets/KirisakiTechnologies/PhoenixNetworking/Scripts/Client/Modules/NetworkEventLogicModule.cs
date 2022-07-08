@@ -3,6 +3,7 @@
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 using UnityEngine;
 
@@ -32,6 +33,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             _NetworkEventHandlerModule.OnUdpPayloadReceived += UdpPayloadReceivedHandler;
             _NetworkEventHandlerModule.OnUdpServerTickReceived += UdpServerTickReceivedHandler;
             _NetworkEventHandlerModule.OnHandshakePacketRequested += HandshakePacketRequestedHandler;
+
+            _TcpPacketProvider = gameSystem.GetProvider<ITcpPacketProvider>();
 
             return base.Initialize(gameSystem);
         }
@@ -72,14 +75,21 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             OnUdpServerTickReceived?.Invoke(payload);
         }
 
-        // TODO: send handshake packet in here instead of expecting subscribers to send it.
-        private void HandshakePacketRequestedHandler(int payload) => OnHandshakePacketRequested?.Invoke(payload);
+        private void HandshakePacketRequestedHandler(int payload)
+        {
+            // TODO: IMPORTANT!!! Find proper way to send name to server
+            using (var packet = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(payload, "RandomName"))
+                _NetworkEventHandlerModule.SendTcpDataToServer(packet);
+
+            OnHandshakePacketRequested?.Invoke(payload);
+        }
 
         #endregion
 
         #region Private
 
         private INetworkEventHandlerModule _NetworkEventHandlerModule;
+        private ITcpPacketProvider _TcpPacketProvider;
 
         #endregion
     }

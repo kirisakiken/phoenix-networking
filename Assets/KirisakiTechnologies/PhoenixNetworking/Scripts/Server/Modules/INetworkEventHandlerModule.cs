@@ -13,6 +13,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
     {
         event NetworkReceiveEvent<UdpClientInputPayload> OnUdpClientInputPayloadReceived;
 
+        // TODO: change type from TcpConnectedClientBroadcastPayload to dedicated new payload type
+        event NetworkReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectionHandshakeCompleted;
+
         void SendUdpData(int clientId, Packet packet);
 
         void SendUdpDataToAll(Packet packet);

@@ -14,6 +14,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         #region INetworkEventLogicModule Implementation
 
         public event NetworkLogicEvent<UdpClientInputPayload> OnUdpClientInputPayloadReceived;
+        public event NetworkLogicEvent<TcpConnectedClientBroadcastPayload> OnClientConnectionHandshakeCompleted;
 
         #endregion
 
@@ -23,6 +24,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         {
             _NetworkEventHandlerModule = gameSystem.GetModule<INetworkEventHandlerModule>();
             _NetworkEventHandlerModule.OnUdpClientInputPayloadReceived += UdpClientInputPayloadReceivedHandler;
+            _NetworkEventHandlerModule.OnClientConnectionHandshakeCompleted += ClientConnectionHandshakeCompleted;
 
             return base.Initialize(gameSystem);
         }
@@ -42,6 +44,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
             OnUdpClientInputPayloadReceived?.Invoke(clientId, payload); // TODO: sub to this from e.g. IServerClientControllerModule
         }
+
+        private void ClientConnectionHandshakeCompleted(int clientId, TcpConnectedClientBroadcastPayload payload) => OnClientConnectionHandshakeCompleted?.Invoke(clientId, payload);
 
         #endregion
 

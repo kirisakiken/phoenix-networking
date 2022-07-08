@@ -10,5 +10,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
     public interface INetworkEventLogicModule : IGameModule
     {
         event NetworkLogicEvent<UdpClientInputPayload> OnUdpClientInputPayloadReceived;
+        // TODO: change type TcpConnectedClientBroadcastPayload to another new dedicated type
+        event NetworkLogicEvent<TcpConnectedClientBroadcastPayload> OnClientConnectionHandshakeCompleted;
     }
 }
