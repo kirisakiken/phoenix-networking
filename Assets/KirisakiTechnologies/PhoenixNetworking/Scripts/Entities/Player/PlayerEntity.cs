@@ -6,10 +6,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player
     {
         #region Constructors
 
-        public PlayerEntity(int id, int clientId, [CanBeNull] string networkId)
+        public PlayerEntity(int id, int clientId, string clientName, [CanBeNull] string networkId)
         {
             Id = id;
             ClientId = clientId;
+            ClientName = clientName;
             NetworkId = string.IsNullOrEmpty(networkId)
                 ? System.Guid.NewGuid().ToString()
                 : networkId;
@@ -20,6 +21,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player
         #region IPlayerEntity Implementation
 
         public int ClientId { get; }
+        public string ClientName { get; }
 
         #endregion
 

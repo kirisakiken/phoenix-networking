@@ -4,5 +4,7 @@
     public interface IPlayerEntity : INetworkEntity
     {
         int ClientId { get; }
+
+        string ClientName { get; }
     }
 }
