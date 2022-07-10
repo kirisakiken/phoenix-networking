@@ -17,12 +17,5 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         ///     Represents the tick rate of the module
         /// </summary>
         int TickRate { get; }
-
-        /// <summary>
-        ///     Represents the function that needs to be executed
-        ///     every fixed frame rate. Main usage of this method
-        ///     is sending UDP payload to clients
-        /// </summary>
-        void Tick();
     }
 }

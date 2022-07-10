@@ -19,18 +19,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         public int TickRate => _TickRate;
 
-        public void Tick()
-        {
-            if (!CanExecuteTick)
-                return;
-
-            RefreshPayload();
-            BuildPayload();
-
-            using (var packet = _TcpPacketProvider.UdpServerTickPacket(_Payload))
-                _NetworkEventHandlerModule.SendUdpDataToAll(packet);
-        }
-
         #endregion
 
         #region Overrides
@@ -63,6 +51,18 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             RemovedEntities = new List<GenericNetworkEntity>(),
         };
 
+        private void Tick()
+        {
+            if (!CanExecuteTick)
+                return;
+
+            RefreshPayload();
+            BuildPayload();
+
+            using (var packet = _TcpPacketProvider.UdpServerTickPacket(_Payload))
+                _NetworkEventHandlerModule.SendUdpDataToAll(packet);
+        }
+
         private void RefreshPayload()
         {
             _Payload.AddedEntities.Clear();
@@ -82,7 +82,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         #region MonoBehaviour Methods
 
         // TODO: move from fixed update to another thread and execute it using fixed rate
-        private void FixedUpdate() => Tick();
+        private void FixedUpdate()
+        {
+            Tick();
+        }
 
         #endregion
     }
