@@ -8,9 +8,9 @@ using KirisakiTechnologies.GameSystem.Scripts.Factories;
 using KirisakiTechnologies.GameSystem.Scripts.Modules.Entities;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player;
 
-namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Views.Entities
+namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entities
 {
-    public class ServerPlayerControllerFactory : GameViewFactoryBaseMono, IServerPlayerControllerFactory
+    public class ServerPlayerControllerFactory : GameControllerFactoryBaseMono, IServerPlayerControllerFactory
     {
         #region Overrides
 
