@@ -32,7 +32,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         #region Private
 
-        private readonly Dictionary<int, Dictionary<ClientInputKey, bool>> _ClientInputs = new Dictionary<int, Dictionary<ClientInputKey, bool>>();
+        private readonly Dictionary<int, Dictionary<ClientInputKey, bool>> _ClientInputs = new Dictionary<int, Dictionary<ClientInputKey, bool>>(); // TODO: find a way to make the value IReadOnlyDict
 
         private INetworkEventLogicModule _NetworkEventLogicModule;
 

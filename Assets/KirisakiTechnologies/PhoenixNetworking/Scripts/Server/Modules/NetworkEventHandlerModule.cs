@@ -154,7 +154,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         private void ClientDisconnectedHandler(int clientId, Packet packet)
         {
-            throw new NotImplementedException($"{nameof(ClientDisconnectedHandler)} not implemented!");
+            throw new NotImplementedException();
         }
 
         // TODO: remove
