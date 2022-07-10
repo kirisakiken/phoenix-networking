@@ -8,11 +8,9 @@ using KirisakiTechnologies.GameSystem.Scripts.Factories;
 using KirisakiTechnologies.GameSystem.Scripts.Modules.Entities;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player;
 
-using UnityEngine;
-
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Views.Entities
 {
-    public class ServerPlayerViewFactory : GameViewFactoryBaseMono, IServerPlayerViewFactory
+    public class ServerPlayerControllerFactory : GameViewFactoryBaseMono, IServerPlayerControllerFactory
     {
         #region Overrides
 
@@ -36,7 +34,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Views.
                     continue;
 
                 // instantiate and draw player model
-                Debug.Log($"PlayerEntity: Id[{playerEntity.Id}], ClientId[{playerEntity.ClientId}], ClientName[{playerEntity.ClientName}], NetworkId[{playerEntity.NetworkId}]");
+                CreateView(playerEntity);
             }
 
             foreach (var entity in transaction.ModifiedEntities)
@@ -62,7 +60,22 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Views.
 
         #region Private
 
+        // [SerializeField]
+        // private IServerPlayerController _ServerPlayerControllerPrefab;
+
+        // private readonly Dictionary<IEntity, IServerPlayerController> _Controllers = new Dictionary<IEntity, IServerPlayerController>();
+
         private IEntitiesModule _EntitiesModule;
+
+        private void CreateView(IPlayerEntity playerEntity)
+        {
+            
+        }
+
+        private void Redraw()
+        {
+            
+        }
 
         #endregion
     }

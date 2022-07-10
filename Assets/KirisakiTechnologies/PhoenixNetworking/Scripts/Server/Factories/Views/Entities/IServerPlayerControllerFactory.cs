@@ -5,7 +5,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Views.
     /// <summary>
     ///     Represents the view factory of PlayerEntities
     /// </summary>
-    public interface IServerPlayerViewFactory : IGameViewFactory
+    public interface IServerPlayerControllerFactory : IGameViewFactory
     {
         
     }
