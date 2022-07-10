@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using KirisakiTechnologies.GameSystem.Scripts;
@@ -6,7 +7,10 @@ using KirisakiTechnologies.GameSystem.Scripts.Entities;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Factories;
 using KirisakiTechnologies.GameSystem.Scripts.Modules.Entities;
+using KirisakiTechnologies.PhoenixNetworking.PlayerController.Scripts;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player;
+
+using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entities
 {
@@ -16,6 +20,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entiti
 
         public override Task Initialize(IGameSystem gameSystem)
         {
+            _GameSystem = gameSystem;
             _EntitiesModule = gameSystem.GetModule<IEntitiesModule>();
             _EntitiesModule.OnEntitiesChanged += EntitiesChangedHandler;
 
@@ -33,8 +38,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entiti
                 if (!(entity is IPlayerEntity playerEntity))
                     continue;
 
-                // instantiate and draw player model
-                CreateView(playerEntity);
+                CreateController(playerEntity);
             }
 
             foreach (var entity in transaction.ModifiedEntities)
@@ -60,21 +64,30 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entiti
 
         #region Private
 
-        // [SerializeField]
-        // private IServerPlayerController _ServerPlayerControllerPrefab;
+        [SerializeField]
+        private ServerPlayerController _ServerPlayerControllerPrefab;
 
-        // private readonly Dictionary<IEntity, IServerPlayerController> _Controllers = new Dictionary<IEntity, IServerPlayerController>();
+        private readonly Dictionary<IEntity, IServerPlayerController> _Controllers = new Dictionary<IEntity, IServerPlayerController>();
 
+        private IGameSystem _GameSystem;
         private IEntitiesModule _EntitiesModule;
 
-        private void CreateView(IPlayerEntity playerEntity)
+        private void CreateController(IPlayerEntity playerEntity)
         {
-            
-        }
+            if (playerEntity == null)
+                throw new ArgumentNullException(nameof(playerEntity));
 
-        private void Redraw()
-        {
-            
+            if (_ServerPlayerControllerPrefab == null)
+                throw new NullReferenceException(nameof(_ServerPlayerControllerPrefab));
+
+            if (_Controllers.ContainsKey(playerEntity))
+                throw new Exception($"Player entity: {playerEntity.Id} already exists in the collection: {nameof(_Controllers)}");
+
+            var controller = Instantiate(_ServerPlayerControllerPrefab);
+            controller.PlayerEntity = playerEntity;
+            controller.Initialize(_GameSystem);
+
+            _Controllers.Add(playerEntity, controller);
         }
 
         #endregion
