@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Entities;
@@ -8,7 +7,6 @@ using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.GameSystem.Scripts.Modules.Entities;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player;
-using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules.Entities
 {

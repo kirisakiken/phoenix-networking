@@ -56,11 +56,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             OnUdpPayloadReceived?.Invoke(payload);
         }
 
-        private void UdpServerTickReceivedHandler(UdpServerTickPayload payload)
-        {
-            Debug.LogWarning("No one subbed to OnUdpServerTickReceived event from NetworkEventLogicModule");
-            OnUdpServerTickReceived?.Invoke(payload); // TODO: client side handling (sub to this and handle incoming payload)
-        }
+        private void UdpServerTickReceivedHandler(UdpServerTickPayload payload) => OnUdpServerTickReceived?.Invoke(payload);
 
         private void HandshakePacketRequestedHandler(int payload)
         {
