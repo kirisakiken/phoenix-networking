@@ -2,8 +2,10 @@ using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Controllers;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.Entities;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
+using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules.Entities;
 
 using UnityEngine;
 
@@ -23,6 +25,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.PlayerController.Scripts
         {
             base.Initialize(gameSystem);
 
+            _NetworkEntitiesModule = gameSystem.GetModule<INetworkEntitiesModule>();
             _ServerClientsInputModule = gameSystem.GetModule<IServerClientsInputModule>();
         }
 
@@ -36,6 +39,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.PlayerController.Scripts
         [SerializeField]
         private int _MovementSpeed = 10;
 
+        private INetworkEntitiesModule _NetworkEntitiesModule;
         private IServerClientsInputModule _ServerClientsInputModule;
 
         private void MovePlayer()
@@ -45,7 +49,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.PlayerController.Scripts
 
             var clientInputs = _ServerClientsInputModule.ClientInputs[PlayerEntity.ClientId];
             var movementVector = Vector3.zero;
-            // remap input enum to vector 3 for finding input direction (e.g. forward/back)
+            // TODO: remap input enum to vector 3 for finding input direction (e.g. forward/back)
             foreach (var input in clientInputs)
             {
                 switch (input.Key)
@@ -91,6 +95,15 @@ namespace KirisakiTechnologies.PhoenixNetworking.PlayerController.Scripts
 
             movementVector *= _MovementSpeed;
             _RootTransform.Translate(movementVector * Time.deltaTime);
+
+            PlayerEntity.Position = _RootTransform.position;
+            PlayerEntity.Rotation = _RootTransform.rotation;
+
+            if (!movementVector.IsZero())
+            {
+                // send as modified entity
+                _NetworkEntitiesModule.AddDirty(PlayerEntity, NetworkEntityState.Modified);
+            }
         }
 
         #endregion

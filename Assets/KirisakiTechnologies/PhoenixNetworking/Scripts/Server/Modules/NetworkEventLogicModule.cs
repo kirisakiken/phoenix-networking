@@ -5,8 +5,6 @@ using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
 
-using UnityEngine;
-
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 {
     public class NetworkEventLogicModule : GameModuleBaseMono, INetworkEventLogicModule
@@ -35,14 +33,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         private void UdpClientInputPayloadReceivedHandler(int clientId, UdpClientInputPayload payload)
         {
-            // TODO: remove debugging
-            Debug.Log($"Received udp client input. FROM: Client[{clientId}]");
-            foreach (var kvp in payload.ModifiedKeys)
-            {
-                Debug.Log($"Client[{clientId}]:{kvp.Key}|{kvp.Value}");
-            }
-
-            OnUdpClientInputPayloadReceived?.Invoke(clientId, payload); // TODO: sub to this from e.g. IServerClientControllerModule
+            OnUdpClientInputPayloadReceived?.Invoke(clientId, payload);
         }
 
         private void ClientConnectionHandshakeCompleted(int clientId, TcpConnectedClientBroadcastPayload payload) => OnClientConnectionHandshakeCompleted?.Invoke(clientId, payload);

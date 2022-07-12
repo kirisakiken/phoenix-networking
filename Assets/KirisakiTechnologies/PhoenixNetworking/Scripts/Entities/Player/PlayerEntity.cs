@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player
 {
@@ -22,6 +23,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Entities.Player
 
         public int ClientId { get; }
         public string ClientName { get; }
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
 
         #endregion
 

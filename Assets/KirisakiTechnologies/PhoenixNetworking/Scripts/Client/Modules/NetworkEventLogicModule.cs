@@ -5,6 +5,7 @@ using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
+
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
@@ -57,22 +58,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         private void UdpServerTickReceivedHandler(UdpServerTickPayload payload)
         {
-            // TODO: remove
-            Debug.Log("Received udp server tick. Contents;");
-            payload.AddedEntities.ForEach(entity =>
-            {
-                Debug.Log($"Type: {entity.EntityType},\n{entity.Data}");
-            });
-            payload.ModifiedEntities.ForEach(entity =>
-            {
-                Debug.Log($"Type: {entity.EntityType},\n{entity.Data}");
-            });
-            payload.RemovedEntities.ForEach(entity =>
-            {
-                Debug.Log($"Type: {entity.EntityType},\n{entity.Data}");
-            });
-
-            OnUdpServerTickReceived?.Invoke(payload);
+            Debug.LogWarning("No one subbed to OnUdpServerTickReceived event from NetworkEventLogicModule");
+            OnUdpServerTickReceived?.Invoke(payload); // TODO: client side handling (sub to this and handle incoming payload)
         }
 
         private void HandshakePacketRequestedHandler(int payload)
