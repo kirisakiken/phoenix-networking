@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
+using KirisakiTechnologies.GameSystem.Scripts;
+using KirisakiTechnologies.GameSystem.Scripts.Entities;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
+using KirisakiTechnologies.GameSystem.Scripts.Modules.Entities;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Entities;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules.Entities
@@ -45,9 +49,54 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules.Entities
 
         #endregion
 
+        #region Overrides
+
+        public override Task Initialize(IGameSystem gameSystem)
+        {
+            _EntitiesModule = gameSystem.GetModule<IEntitiesModule>();
+            _EntitiesModule.OnEntitiesChanged += EntitiesChangedHandler;
+
+            return base.Initialize(gameSystem);
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void EntitiesChangedHandler(ReadonlyEntitiesTransaction payload)
+        {
+            foreach (var entity in payload.AddedEntities)
+            {
+                if (!(entity is INetworkEntity networkEntity))
+                    continue;
+
+                AddDirty(networkEntity, NetworkEntityState.Added);
+            }
+
+            foreach (var entity in payload.ModifiedEntities)
+            {
+                if (!(entity is INetworkEntity networkEntity))
+                    continue;
+
+                AddDirty(networkEntity, NetworkEntityState.Modified);
+            }
+
+            foreach (var entity in payload.RemovedEntities)
+            {
+                if (!(entity is INetworkEntity networkEntity))
+                    continue;
+
+                AddDirty(networkEntity, NetworkEntityState.Removed);
+            }
+        }
+
+        #endregion
+
         #region Private
 
         private readonly Dictionary<INetworkEntity, NetworkEntityState> _NetworkEntities = new Dictionary<INetworkEntity, NetworkEntityState>();
+
+        private IEntitiesModule _EntitiesModule;
 
         #endregion
     }
