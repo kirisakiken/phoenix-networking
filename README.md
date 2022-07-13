@@ -11,32 +11,6 @@ Early project. Under development. Public contributions are welcome. Contact me a
 
 ---
 
-### Server Architecture
+### Server Network Event Architecture
 
-```
-                                                                                          
-                                                          +---------------------------------------------------------+
-                                    OnClientConnected     | Sends initial connection payload to connected client    |
-                                +-----------------------> | Broadcasts connected client packet to available clients |
-                                |                         +---------------------------------------------------------+
-                                |
-+------------------+            |
-|                  |            |                         +---------------------------------------------------------+
-|                  |    TCP     |   OnClientDisconnected  |   Under development                                     |
-|      Server      +---------->+|-----------------------> |                                                         |
-|                  |            |                         +---------------------------------------------------------+
-|                  |            |
-+--------+---------+            |
-         |                      |                        +----------------------------------------------------------+
-         |                      |   OnMessageReceived    | Broadcasts received message from client to               |
-         |                      |   FromClient           | all available clients                                    |
-         |                      +----------------------->|                                                          |
-         |                                               +----------------------------------------------------------+
-         |
-         |
-         |                     +---------------------------------------------------------+
-         |        UDP          |   Broadcasts all added, modified and removed            |
-         +-------------------->+   entities to available UDP Clients                     |
-                               |                                                         |
-                               +---------------------------------------------------------+
-```
+<img src="https://github.com/kirisakiken/phoenix-networking/blob/master/.docs/PhoenixNetworking/Server/Server_Network_Event_Architecture.png" alt="alt text" title="Server Network Event Architecture" />
