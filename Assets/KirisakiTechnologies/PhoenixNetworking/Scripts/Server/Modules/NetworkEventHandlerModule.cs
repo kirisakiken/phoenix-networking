@@ -17,6 +17,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
         #region INetworkEventHandlerModule Implementation
 
         public event NetworkReceiveEvent<UdpClientInputPayload> OnUdpClientInputPayloadReceived;
+        public event NetworkReceiveEvent<TcpConnectedClientBroadcastPayload> OnClientConnectionHandshakeCompleted;
 
         public void SendUdpData(int clientId, Packet packet)
         {
@@ -120,6 +121,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                 SendTcpDataToAllExceptOne(clientId, broadcastPacket);
 
             // TODO: Handshake event and sub to it from NetworkEventLogicModule to implement logic needs to be executed
+            OnClientConnectionHandshakeCompleted?.Invoke(clientId, payload);
         }
 
         private void ClientTcpMessagePayloadReceivedHandler(int clientId, Packet packet)
@@ -152,7 +154,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         private void ClientDisconnectedHandler(int clientId, Packet packet)
         {
-            throw new NotImplementedException($"{nameof(ClientDisconnectedHandler)} not implemented!");
+            throw new NotImplementedException();
         }
 
         // TODO: remove

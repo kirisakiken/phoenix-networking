@@ -52,4 +52,52 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes
         [JsonProperty("data")]
         public object Data { get; set; }
     }
+
+    public class PlayerNetworkEntity
+    {
+        [JsonProperty("entity_id")]
+        public int EntityId { get; set; }
+
+        [JsonProperty("client_id")]
+        public int ClientId { get; set; }
+
+        [JsonProperty("client_name")]
+        public string ClientName { get; set; }
+
+        [JsonProperty("network_id")]
+        public string NetworkId { get; set; }
+
+        [JsonProperty("position")]
+        public Point3D Position { get; set; }
+
+        [JsonProperty("rotation")]
+        public Point4D Rotation { get; set; }
+    }
+
+    public struct Point3D
+    {
+        [JsonProperty("x")]
+        public float X { get; set; }
+
+        [JsonProperty("y")]
+        public float Y { get; set; }
+
+        [JsonProperty("z")]
+        public float Z { get; set; }
+    }
+
+    public struct Point4D
+    {
+        [JsonProperty("x")]
+        public float X { get; set; }
+
+        [JsonProperty("y")]
+        public float Y { get; set; }
+
+        [JsonProperty("z")]
+        public float Z { get; set; }
+
+        [JsonProperty("w")]
+        public float W { get; set; }
+    }
 }

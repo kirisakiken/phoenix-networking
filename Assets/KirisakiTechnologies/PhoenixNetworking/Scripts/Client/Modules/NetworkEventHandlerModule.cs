@@ -1,33 +1,15 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Providers;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes;
-using Newtonsoft.Json;
-using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 {
     public class NetworkEventHandlerModule : GameModuleBaseMono, INetworkEventHandlerModule
     {
-        private void Update()
-        {
-            // TODO: REFACTOR
-            // SENDING UDP PAYLOAD MESSAGE TO SERVER VIA UDP
-            // TODO: change message id to PlayerUdpPayload and have handler on ServerSide, e.g. invoke events to move player
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                var msg = JsonConvert.SerializeObject(new UdpPayload()
-                {
-                    Message = $"test input message by client: {_ClientModule.Id}"
-                });
-                SendUdpClientMessageToServer(_ClientModule.Id, msg);
-            }
-        }
-
         #region INetworkEventHandlerModule Implementation
 
         public event TcpReceiveEvent<TcpInitialConnectPayload> OnInitialConnectPackageReceived;
@@ -88,11 +70,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             var receivedData = _TcpPacketProvider.DeserializeOnClientInitialConnectionPacket(receivedPacket);
             _ClientModule.Id = receivedData.ClientId;
 
-            // TODO: not a good place to send handshake here
-            // using (var welcomeReceivedPacket = _TcpPacketProvider.OnConnectWelcomeReceivedPacket(receivedData.ClientId, $"AliBaba"))
-            //     SendTcpDataToServer(welcomeReceivedPacket);
             OnHandshakePacketRequested?.Invoke(receivedData.ClientId);
-
             OnInitialConnectPackageReceived?.Invoke(receivedData);
         }
 
