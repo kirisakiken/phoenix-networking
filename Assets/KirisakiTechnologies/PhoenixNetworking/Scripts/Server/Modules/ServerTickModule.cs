@@ -118,6 +118,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
                     genericNetworkEntity.EntityType = EntityType.PlayerEntity;
                     genericNetworkEntity.Data = JsonConvert.SerializeObject(new PlayerNetworkEntity
                     {
+                        EntityId = playerEntity.Id,
+                        ClientId = playerEntity.ClientId,
+                        ClientName = playerEntity.ClientName,
                         NetworkId = playerEntity.NetworkId,
                         Position = new Point3D
                         {

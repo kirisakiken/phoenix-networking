@@ -55,6 +55,15 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.DataTypes
 
     public class PlayerNetworkEntity
     {
+        [JsonProperty("entity_id")]
+        public int EntityId { get; set; }
+
+        [JsonProperty("client_id")]
+        public int ClientId { get; set; }
+
+        [JsonProperty("client_name")]
+        public string ClientName { get; set; }
+
         [JsonProperty("network_id")]
         public string NetworkId { get; set; }
 
