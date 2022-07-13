@@ -13,4 +13,4 @@ Early project. Under development. Public contributions are welcome. Contact me a
 
 ### Server Network Event Architecture
 
-![server network event architecture](https://github.com/kirisakiken/phoenix-networking/blob/master/.docs/PhoenixNetworking/Server/Server_Network_Event_Architecture.png "Server Network Event Architecture")
+<img src="https://github.com/kirisakiken/phoenix-networking/blob/master/.docs/PhoenixNetworking/Server/Server_Network_Event_Architecture.png" alt="alt text" title="Server Network Event Architecture" />
