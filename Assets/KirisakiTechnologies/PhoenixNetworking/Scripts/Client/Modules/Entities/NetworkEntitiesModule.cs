@@ -42,9 +42,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules.Entities
                 {
                     case EntityType.PlayerEntity:
                     {
-                        // create player entity
-                        Debug.Log("added entity");
-
                         // TODO: deserializing can be moved somewhere else maybe?
                         var playerNetworkEntity = JsonConvert.DeserializeObject<PlayerNetworkEntity>((string) genericNetworkEntity.Data);
                         if (playerNetworkEntity == null)
@@ -70,9 +67,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules.Entities
                 {
                     case EntityType.PlayerEntity:
                     {
-                        // update player entity
-                        Debug.Log("updated entity");
-
                         var playerNetworkEntity = JsonConvert.DeserializeObject<PlayerNetworkEntity>((string) genericNetworkEntity.Data);
                         if (playerNetworkEntity == null)
                             throw new Exception("Unable to deserialize modified entity data from payload");
@@ -98,16 +92,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules.Entities
                 {
                     case EntityType.PlayerEntity:
                     {
-                        // remove player entity
-                        Debug.Log("removed entity");
-
                         var playerNetworkEntity = JsonConvert.DeserializeObject<PlayerNetworkEntity>((string) genericNetworkEntity.Data);
                         if (playerNetworkEntity == null)
                             throw new Exception("Unable to deserialize removed entity data from payload");
 
-                        var playerEntity = _EntitiesModule.GetEntity<IPlayerEntity>(playerNetworkEntity.EntityId); // TODO: IMPORTANT!!! Change 1 with PlayerNetworkEntity.EntityId;
+                        var playerEntity = _EntitiesModule.GetEntity<IPlayerEntity>(playerNetworkEntity.EntityId);
                         if (playerEntity == null)
-                            throw new Exception("Unable to find player entity with id: 1");
+                            throw new Exception($"Unable to find player entity with id: {playerNetworkEntity.EntityId}");
 
                         transaction.RemovedEntities.Add(playerEntity);
                         break;
@@ -117,7 +108,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules.Entities
                 }
             }
 
-            // TODO: invoke event here and collect position/rotation of entities (which we didn't processed above) (but also, update entities invokes updated entities event?)
             _EntitiesModule.UpdateEntities(transaction);
         }
 

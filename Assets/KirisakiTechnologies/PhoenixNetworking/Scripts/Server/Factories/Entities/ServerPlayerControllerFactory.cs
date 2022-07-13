@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using JetBrains.Annotations;
+
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Entities;
 using KirisakiTechnologies.GameSystem.Scripts.Extensions;
@@ -41,22 +43,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entiti
                 CreateController(playerEntity);
             }
 
-            foreach (var entity in transaction.ModifiedEntities)
-            {
-                if (!(entity is IPlayerEntity playerEntity))
-                    continue;
-
-                // update player
-                throw new NotImplementedException();
-            }
-
             foreach (var entity in transaction.RemovedEntities)
             {
                 if (!(entity is IPlayerEntity playerEntity))
                     continue;
 
-                // remove player model
-                throw new NotImplementedException();
+                RemoveController(playerEntity);
             }
         }
 
@@ -67,12 +59,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entiti
         [SerializeField]
         private ServerPlayerController _ServerPlayerControllerPrefab;
 
-        private readonly Dictionary<IEntity, IServerPlayerController> _Controllers = new Dictionary<IEntity, IServerPlayerController>();
+        private readonly Dictionary<int, IServerPlayerController> _Controllers = new Dictionary<int, IServerPlayerController>();
 
         private IGameSystem _GameSystem;
         private IEntitiesModule _EntitiesModule;
 
-        private void CreateController(IPlayerEntity playerEntity)
+        private void CreateController([NotNull] IPlayerEntity playerEntity)
         {
             if (playerEntity == null)
                 throw new ArgumentNullException(nameof(playerEntity));
@@ -80,14 +72,25 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Factories.Entiti
             if (_ServerPlayerControllerPrefab == null)
                 throw new NullReferenceException(nameof(_ServerPlayerControllerPrefab));
 
-            if (_Controllers.ContainsKey(playerEntity))
+            if (_Controllers.ContainsKey(playerEntity.Id))
                 throw new Exception($"Player entity: {playerEntity.Id} already exists in the collection: {nameof(_Controllers)}");
 
             var controller = Instantiate(_ServerPlayerControllerPrefab);
             controller.PlayerEntity = playerEntity;
             controller.Initialize(_GameSystem);
 
-            _Controllers.Add(playerEntity, controller);
+            _Controllers.Add(playerEntity.Id, controller);
+        }
+
+        private void RemoveController([NotNull] IPlayerEntity playerEntity)
+        {
+            if (playerEntity == null)
+                throw new ArgumentNullException(nameof(playerEntity));
+
+            if (!_Controllers.ContainsKey(playerEntity.Id))
+                throw new KeyNotFoundException($"Unable to find PlayerEntity[{playerEntity.Id}] in collection: {nameof(_Controllers)}");
+
+            _Controllers.Remove(playerEntity.Id);
         }
 
         #endregion

@@ -65,9 +65,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
             RefreshPayload();
             BuildPayload();
-
-            using (var packet = _TcpPacketProvider.UdpServerTickPacket(_Payload))
-                _NetworkEventHandlerModule.SendUdpDataToAll(packet);
+            BroadcastPayload();
         }
 
         private void RefreshPayload()
@@ -106,6 +104,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
             }
 
             _NetworkEntitiesModule.CleanStates();
+        }
+
+        private void BroadcastPayload()
+        {
+            using (var packet = _TcpPacketProvider.UdpServerTickPacket(_Payload))
+                _NetworkEventHandlerModule.SendUdpDataToAll(packet);
         }
 
         private static GenericNetworkEntity BuildNetworkEntity(INetworkEntity networkEntity)
