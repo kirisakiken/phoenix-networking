@@ -182,8 +182,13 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules
 
         private void OnApplicationQuit()
         {
-            _TcpListener.Stop();
-            _UdpListener.Close();
+            foreach (var client in Clients.Values)
+            {
+                if (!client.ServerTcp.IsConnected)
+                    continue;
+
+                client.Disconnect();
+            }
         }
 
         #endregion

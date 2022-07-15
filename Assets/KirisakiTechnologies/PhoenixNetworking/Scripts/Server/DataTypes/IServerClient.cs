@@ -14,6 +14,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         IServerTcp ServerTcp { get; }
 
         IServerUdp ServerUdp { get; }
+
+        void Disconnect();
     }
 
     // TODO: add description
@@ -29,6 +31,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
         void Connect([NotNull] TcpClient socket);
 
+        void Disconnect();
+
         void SendData(Packet packet); // TODO: refactor packet file
     }
 
@@ -40,6 +44,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         IPEndPoint EndPoint { get; }
 
         void Connect([NotNull] IPEndPoint endPoint);
+
+        void Disconnect();
 
         void SendData(Packet packet);
 

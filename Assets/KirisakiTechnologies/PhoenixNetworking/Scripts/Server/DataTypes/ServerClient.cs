@@ -30,6 +30,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         public IServerTcp ServerTcp { get; }
         public IServerUdp ServerUdp { get; }
 
+        public void Disconnect()
+        {
+            Debug.Log($"{ServerTcp.Socket.Client.RemoteEndPoint} has disconnected.");
+
+            ServerTcp.Disconnect();
+            ServerUdp.Disconnect();
+        }
+
         #endregion
 
         #region Private
@@ -75,6 +83,15 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             _Stream.BeginRead(_ReceiveBuffer, 0, DataBufferSize, ReceiveCallback, null);
         }
 
+        public void Disconnect()
+        {
+            Socket.Close();
+            _Stream = null;
+            _ReceivedData = null;
+            _ReceiveBuffer = null;
+            Socket = null;
+        }
+
         // TODO: rename to e.g. WriteStreamData/WriteData/WritePacket/WriteAndSendData
         public void SendData(Packet packet)
         {
@@ -108,12 +125,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
         #endregion
 
-        #region Public
-
-        
-
-        #endregion
-
         #region Private
 
         private NetworkStream _Stream;
@@ -121,7 +132,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
         private byte[] _ReceiveBuffer;
         private Packet _ReceivedData; // TODO: refactor packet file
 
-        private IServerModule _ServerModule; // TODO: remove module from constructor when dependencies are refactored
+        private readonly IServerModule _ServerModule; // TODO: remove module from constructor when dependencies are refactored
 
         private void ReceiveCallback(IAsyncResult result)
         {
@@ -129,7 +140,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             {
                 var byteLength = _Stream.EndRead(result);
                 if (byteLength <= 0)
+                {
+                    _ServerModule.Clients[Id].Disconnect();
                     return;
+                }
 
                 var data = new byte[byteLength];
                 Array.Copy(_ReceiveBuffer, data, byteLength);
@@ -141,6 +155,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                _ServerModule.Clients[Id].Disconnect();
                 throw;
             }
         }
@@ -198,7 +213,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
         public ServerUdp([NotNull] IServerModule serverModule, int id)
         {
-            _ServeModule = serverModule ?? throw new ArgumentNullException(nameof(serverModule));
+            _ServerModule = serverModule ?? throw new ArgumentNullException(nameof(serverModule));
             Id = id;
         }
 
@@ -214,9 +229,14 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
             EndPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
         }
 
+        public void Disconnect()
+        {
+            EndPoint = null;
+        }
+
         public void SendData(Packet packet)
         {
-            _ServeModule.SendUdpData(EndPoint, packet);
+            _ServerModule.SendUdpData(EndPoint, packet);
         }
 
         public void HandleData(Packet packet)
@@ -229,7 +249,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
                 using (var packet = new Packet(packetBytes))
                 {
                     var packetId = packet.ReadInt();
-                    _ServeModule.PacketHandlers[packetId](Id, packet);
+                    _ServerModule.PacketHandlers[packetId](Id, packet);
                 }
             });
         }
@@ -248,7 +268,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Server.DataTypes
 
         #region Private
 
-        private IServerModule _ServeModule;
+        private IServerModule _ServerModule;
 
         #endregion
     }
