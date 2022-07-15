@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
 using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
-using TMPro;
+
 using UnityEngine;
 
 namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
@@ -60,6 +60,8 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         {
             Tcp?.Disconnect();
             Udp?.Disconnect();
+
+            Debug.Log($"Disconnected from server.");
         }
 
         #endregion
@@ -102,8 +104,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         {
             OnClientConnected?.Invoke(packet);
 
-            // TODO: remove this from out of here
-            // establish udp connection using TCP connection's port
             Udp ??= new ClientUdp(this);
             Udp.Connect(((IPEndPoint) Tcp.Socket.Client.LocalEndPoint).Port);
         }
@@ -129,7 +129,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
         #region Nested Types
 
-        // TODO: investigate if this should be seperated into another file e.g. DataTypes/IClientTcp
         private class ClientTcp : IClientTcp, IDisposable
         {
             #region Constructors
@@ -156,7 +155,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             #region IClientTcp Implementation
 
-            public TcpClient Socket { get; }
+            public TcpClient Socket { get; private set; }
 
             public bool IsConnected => Socket is { Connected: true };
 
@@ -173,10 +172,12 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             public void Disconnect()
             {
-                if (!IsConnected)
-                    return;
+                Socket?.Close();
 
-                Socket.Close();
+                _Stream = null;
+                _ReceivedData = null;
+                _ReceiveBuffer = null;
+                Socket = null;
             }
 
             public void SendData(Packet packet)
@@ -286,7 +287,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                 {
                     var len = _Stream.EndRead(result);
                     if (len <= 0)
+                    {
+                        _ClientModule.DisconnectFromServer();
                         return;
+                    }
 
                     var data = new byte[len];
                     Array.Copy(_ReceiveBuffer, data, len);
@@ -297,7 +301,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                 }
                 catch (Exception e)
                 {
-                    // TODO: disconnect
+                    Disconnect();
                     Debug.LogWarning($"Error receiving data in callback: {e.Message}");
                 }
             }
@@ -339,7 +343,10 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             public void Disconnect()
             {
-                Socket.Close();
+                Socket?.Close();
+
+                _EndPoint = null;
+                Socket = null;
             }
 
             public void SendData(Packet packet)
@@ -367,12 +374,6 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             {
                 Socket?.Dispose();
             }
-
-            #endregion
-
-            #region Public
-
-            
 
             #endregion
 
@@ -411,13 +412,17 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                     Socket.BeginReceive(ReceiveCallback, null);
 
                     if (data.Length < 4)
+                    {
+                        _ClientModule.DisconnectFromServer();
                         return;
+                    }
 
                     HandleData(data);
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Error on UDP receive callback : {e.Message}");
+                    Disconnect();
+                    Debug.LogWarning($"Error on UDP receive callback : {e.Message}");
                 }
             }
 
