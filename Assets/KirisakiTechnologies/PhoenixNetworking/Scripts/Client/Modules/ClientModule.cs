@@ -20,6 +20,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
         {
             if (Input.GetKeyDown(KeyCode.O))
                 ConnectToServer("Aliaa", Ip, (uint) Port);
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                DisconnectFromServer();
+            }
         }
 
         #region IClientModule Implementation
@@ -142,6 +147,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
                 _Ip = ip;
                 _Port = port;
 
+                _ReceiveBufferSize = receiveBufferSize;
+                _SendBufferSize = sendBufferSize;
+
                 Socket = new TcpClient
                 {
                     ReceiveBufferSize = receiveBufferSize,
@@ -161,8 +169,11 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             public void Connect()
             {
-                if (Socket == null)
-                    throw new NullReferenceException(nameof(Socket));
+                Socket ??= new TcpClient
+                {
+                    ReceiveBufferSize = _ReceiveBufferSize,
+                    SendBufferSize = _SendBufferSize,
+                };
 
                 if (IsConnected)
                     throw new InvalidOperationException("Connect attempt failed. Already connected!");
@@ -223,6 +234,9 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
             private NetworkStream _Stream;
             private byte[] _ReceiveBuffer;
             private Packet _ReceivedData;
+
+            private int _ReceiveBufferSize;
+            private int _SendBufferSize;
 
             // TODO: find a way to move this method out of this class
             private bool HandleData(byte[] data)
@@ -331,7 +345,7 @@ namespace KirisakiTechnologies.PhoenixNetworking.Scripts.Client.Modules
 
             public void Connect(int localPort)
             {
-                Socket = new UdpClient(localPort);
+                Socket ??= new UdpClient(localPort);
 
                 Socket.Connect(EndPoint);
                 Socket.BeginReceive(ReceiveCallback, null);
