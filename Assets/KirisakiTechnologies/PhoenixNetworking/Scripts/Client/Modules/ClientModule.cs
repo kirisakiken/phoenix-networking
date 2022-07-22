@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 using KirisakiTechnologies.GameSystem.Scripts;
 using KirisakiTechnologies.GameSystem.Scripts.Modules;
-using KirisakiTechnologies.PhoenixNetworking.Scripts.Server.Modules;
+using KirisakiTechnologies.GameSystem.Scripts.Modules.Thread;
 
 using UnityEngine;
 
